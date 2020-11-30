@@ -113,7 +113,7 @@ Example Programs
 ---
 print Hello, world
 ```
-zf0w72>w101>w108m3,2f4w111>w44>w32>w119m8,4f9w114m10,3f11w100>w10>w13f0
+z'$f0w72>w101>w108m3,2f4w111>w44>w32>w119m8,4f9w114m10,3f11w100>w10>w13f0
 ;write "Hello, world" from address 0
 [p>]zt ;fill memory with 0 and terminate
 ```
