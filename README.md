@@ -57,7 +57,7 @@ Example: f0w100f1w250-1,0f2= ;buffer = *(mem + 1) - *mem; *(mem + 2) = buffer;
 - Address is set byte-wise. pointer type has no effect.
 - Every data read/write starts from the byte at the current pointer/address, and it's the Left-Most Byte.
 ```
-Example: #f5w127 ;write int type data from address 5 to 8. Data from 5 to 8: 0x000000ff
+Example: #f5w255 ;write int type data from address 5 to 8. Data from 5 to 8: 0x000000ff
 ```
 - The type check of the value stored in the memory will NOT performed.
 ```
@@ -77,9 +77,9 @@ Example: c0,2,!(...) ;if (*mem != *(mem + 2)) {...}
 - byte, pointer increment/decrement will not be affected by the pointer type.
 - 'e' and '!' are comparative operator. They return 1 if condition is true, and 0 if condition is false.
 - 'g' command uses stdin.
-- 'h' command returns error code and halts program execution.
+- 'h' command returns error code and halts program execution. Error code's type is unsigned int.
 ```
-Example, h100w65p is written in the file which is being executed.
+Example, z'h100w65p is written in the file which is being executed.
 READY>> s
 Program handled error(100)
 READY>> 
@@ -105,7 +105,7 @@ Example: l`c:\abf\prg.abf`
 ```
 - '/' command uses the value at X as numerator, and the value at Y as denominator.
 - ';' command stops execution of the line immediately. Any characters after ';' and in the same line will be considered as remarks/comments.
-  - Caution: 'v' and ';' has same function internally, but since the purpose of use of the two different, it is recommended to use them separately.
+  - Caution: 'v' and ';' has same function internally, but since the purpose of use of the two is different, it is recommended to use them separately.
 - ':' command stores -1(0xff) if the value at X is less than the value at Y, writes 0 if it is equal, 1(0x01) if it is greater.
 - '{' and '}' are not commands. They can only be used for condition of if statement.
 
