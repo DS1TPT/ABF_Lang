@@ -946,7 +946,7 @@ void help() {
     puts("|: bitwise OR                         {: condition X < Y");
     puts("~: bitwise NOT                        }: condition X > Y");
     puts("For syntax & command usage, please refer to manual or Github page.");
-    puts("Github page: https://github.com/C0r5AAAir/ABF_Lang");
+    puts("Github page: https://github.com/DS1TPT/ABF_Lang");
     printf("Note: This program is licensed under Apache License Version 2.0");
     /*
     commodore 64 commands
