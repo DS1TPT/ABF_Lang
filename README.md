@@ -40,7 +40,7 @@ Syntax
 Handling Argument(s)
 - Every calculations' operand(s) is/are value at address X and/or adresss Y.
 - Argument type of commands except for 'w' are unsigned int.
-- 'w'command's argument type is unsigned int when pointer type is char or int, and unsigned int or double when pointer type is double.
+- 'w'command's argument type is int when pointer type is char or int, and signed int or double when pointer type is double. Unsigned/signed type depends on pointer mode.
 - Arguments must be written right after a command without space or anything else.
 - Arguments must be separated using ','.
 ```
@@ -67,6 +67,10 @@ Example: '#f0w2147483647$f2w0 ;value from 0 to 3: 0x7fff00ff
 - '_' command reads and outputs the value in floating-point type as much as the length of double type.
 - '/' command calculates quotient if pointer type is not double.
 - ':' command saves product to buffer in signed char type.
+- When checking conditions for if statement, interpreter reads and compares data in previously set pointer type.
+'''
+Example:'#c10,32,!(f0\) ;if int value at address 10 to 13 is not equal to value at address 32 to 35 then f0\
+'''
 Command usage and syntax
 - Before if statement, conditions must be defined using 'c' command.
 - 'c' command needs 3 arguments. Argument order is: X, Y, comparative command.
