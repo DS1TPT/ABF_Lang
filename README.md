@@ -63,14 +63,14 @@ Example: #f5w255 ;write int type data from address 5 to 8. Data from 5 to 8: 0x0
 ```
 Example: '#f0w2147483647$f2w0 ;value from 0 to 3: 0x7fff00ff
 ```
-- '\' command reads and outputs the value as much as the length corresponding to the pointer type. In the case of a double pointer, the value is converted to an integer and output.
+- '\\' command reads and outputs the value as much as the length corresponding to the pointer type. In the case of a double pointer, the value is converted to an integer and output.
 - '_' command reads and outputs the value in floating-point type as much as the length of double type.
 - '/' command calculates quotient if pointer type is not double.
 - ':' command saves product to buffer in signed char type.
 - When checking conditions for if statement, interpreter reads and compares data in previously set pointer type.
-'''
+```
 Example:'#c10,32,!(f0\) ;if int value at address 10 to 13 is not equal to value at address 32 to 35 then f0\
-'''
+```
 Command usage and syntax
 - Before if statement, conditions must be defined using 'c' command.
 - 'c' command needs 3 arguments. Argument order is: X, Y, comparative command.
