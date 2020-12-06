@@ -118,6 +118,6 @@ Example Programs
 print Hello, world
 ```
 z'$f0w72>w101>w108m2,3f4w111>w44>w32>w119m4,8f9w114m3,10f11w100>w10>w13f0
-;write "Hello, world" from address 0
-[p>]zt ;print and increment pointer while byte is not 0, fill memory with 0 and terminate after loop
+;write "Hello, world" from address 0 and then set address to 0
+[p>]zt ;print and increment pointer(address) while byte is not 0, fill memory with 0 and terminate after loop
 ```
