@@ -73,7 +73,7 @@ Example:'#c10,32,!(f0\) ;if int value at address 10 to 13 is not equal to value 
 ```
 Command usage and syntax
 - Before if statement, conditions must be defined using 'c' command.
-- 'c' command needs 3 arguments. Argument order is: X, Y, comparative command.
+- 'c' command needs 3 arguments. Argument order is: X, Y, comparative/logical operation command.
 ```
 Example: c0,2,!(...) ;if (*mem != *(mem + 2)) {...}
 ```
@@ -117,7 +117,7 @@ Example Programs
 ---
 print Hello, world
 ```
-z'$f0w72>w101>w108m3,2f4w111>w44>w32>w119m8,4f9w114m10,3f11w100>w10>w13f0
+z'$f0w72>w101>w108m2,3f4w111>w44>w32>w119m4,8f9w114m3,10f11w100>w10>w13f0
 ;write "Hello, world" from address 0
-[p>]zt ;fill memory with 0 and terminate
+[p>]zt ;print and increment pointer while byte is not 0, fill memory with 0 and terminate after loop
 ```
