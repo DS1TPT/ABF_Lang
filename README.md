@@ -39,7 +39,7 @@ Syntax
 ---
 Handling Argument(s)
 - Every calculations' operand(s) is/are value at address X and/or adresss Y.
-- Argument type of commands except for 'w' are unsigned int.
+- Argument type of commands except for 'w' are int(unsigned/signed type depends on pointer mode).
 - 'w'command's argument type is int when pointer type is char or int, and signed int or double when pointer type is double. Unsigned/signed type depends on pointer mode.
 - Arguments must be written right after a command without space or anything else.
 - Arguments must be separated using ','.
