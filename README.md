@@ -110,7 +110,7 @@ Example: l`c:\abf\prg.abf`
 - '/' command uses the value at X as numerator, and the value at Y as denominator.
 - ';' command stops execution of the line immediately. Any characters after ';' and in the same line will be considered as remarks/comments.
   - Caution: 'v' and ';' has same function internally, but since the purpose of use of the two is different, it is recommended to use them separately.
-- ':' command stores -1(0xff) if the value at X is less than the value at Y, writes 0 if it is equal, 1(0x01) if it is greater.
+- ':' command stores -1(0xff) if the value at X is less than the value at Y, 0 if it is equal, 1(0x01) if it is greater.
 - '{' and '}' are not commands. They can only be used for condition of if statement.
 
 Example Programs
