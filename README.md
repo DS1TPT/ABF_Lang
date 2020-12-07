@@ -11,7 +11,7 @@ c: define Condition                   !: NEQ
 d: Decrement byte                     @: set double pointer
 e: EQU                                #: set integer pointer
 f: Forward(set ptr to X)              $: set char pointer
-g: Getchar                            %: remainder(mod)
+g: Getchar                            %: modulus
 h: Handle Error                       ^: bitwise XOR
 i: Increment byte                     &: bitwise AND
 j: Jump                               *: multiply
