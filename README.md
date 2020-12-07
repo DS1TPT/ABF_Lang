@@ -1,4 +1,4 @@
-ABF, Alphabetical BrainFuck
+ABF, Ascii BrainFuck
 ===
 ABF is an esoteric programming language based on BrainFuck.
 
