@@ -84,9 +84,9 @@ Example: c0,2,!(...) ;if (*mem != *(mem + 2)) {...}
 - 'h' command returns error code and halts program execution. Error code's type is unsigned int.
 ```
 Example, z'h100w65p is written in the file which is being executed.
-READY>> s
+READY(0,0000)>> s
 Program handled error(100)
-READY>> 
+READY(0,0000)>> 
 ```
 - 'j' can only be used in file executions. To use this command you must define line number in BASIC style.
 ```
