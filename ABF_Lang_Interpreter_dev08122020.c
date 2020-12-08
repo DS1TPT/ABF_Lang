@@ -25,7 +25,6 @@
 #ifdef _MSC_VER
 #include <conio.h>
 #else
-#include <unistd.h>
 #include <termios.h>
 #define _getche() linuxGetche()
 linuxGetche();
@@ -40,6 +39,9 @@ To-do list
 4. define min/max value of double for c64 using pre-processor
 5. get value in unsigned type when isUnsigned is TRUE
 6. put chkAddrRange at commands interpretations
+7. check if length of input is larger than 1024 including null
+?. debug
+???. simplify after finishing implementation and debugging
 */
 
 #define FALSE 0
@@ -75,7 +77,8 @@ FILE* pFile = NULL;
 
 /* STATUS MARKERS */
 char ptrMode = 0; /* ptrMode 0: char, 1: int, 2: double, 3: uchar(byte), 4: uint */
-BOOL isUnsigned = FALSE, isFileLoaded = FALSE, isCondPresent = FALSE, termination = FALSE, isDebugMode = FALSE;
+BOOL isUnsigned = FALSE, isFileLoaded = FALSE, isCondPresent = FALSE, termination = FALSE, isDebugMode = FALSE, isExec = FALSE;
+unsigned uLineCnt = 0;
 
 /* MISCELLANEOUS */
 int x = 0, y = 0;
@@ -117,19 +120,19 @@ BOOL chkAddrRange(cmdPos, isXY)
     if (isXY) {
         if (ptrMode == 0 || ptrMode == 3) {
             if (x > MEM_SIZE - 1 || x < 0 || y > MEM_SIZE - 1 || y < 0) {
-                printf("?Error address out of range. cmd at %d", cmdPos);
+                printf("?Error address out of range. cmd at %d, line %u", cmdPos, uLineCnt);
                 return TRUE;
             }
         }
         else if (ptrMode == 1 || ptrMode == 4) {
             if (x > MEM_SIZE - INT_SIZE || x < 0 || y > MEM_SIZE - INT_SIZE || y < 0) {
-                printf("?Error address out of range. cmd at %d", cmdPos);
+                printf("?Error address out of range. cmd at %d, line %u", cmdPos, uLineCnt);
                 return TRUE;
             }
         }
         else if (ptrMode == 2) {
             if (x > MEM_SIZE - DBL_SIZE || x < 0 || y > MEM_SIZE - DBL_SIZE || y < 0) {
-                printf("?Error address out of range. cmd at %d", cmdPos);
+                printf("?Error address out of range. cmd at %d, line %u", cmdPos, uLineCnt);
                 return TRUE;
             }
         }
@@ -137,13 +140,13 @@ BOOL chkAddrRange(cmdPos, isXY)
     else {
         if (ptrMode == 1 || ptrMode == 4) {
             if (addr > (MEM_SIZE - INT_SIZE)) {
-                printf("?Error address out of range. cmd at %d", cmdPos);
+                printf("?Error address out of range. cmd at %d, line %u", cmdPos, uLineCnt);
                 return TRUE;
             }
         }
         else if (ptrMode == 2) {
             if (addr > (MEM_SIZE - DBL_SIZE)) {
-                printf("?Error address out of range. cmd at %d", cmdPos);
+                printf("?Error address out of range. cmd at %d, line %u", cmdPos, uLineCnt);
                 return TRUE;
             }
         }
@@ -184,7 +187,10 @@ char* findNextCond(pSz) /* find next condition using ','. returns pos of ',' if 
         if (*pSz >= '0' && *pSz <= '9') pSz++;
         else if (*pSz == ',') return ++pSz; /* found separator */
         else {
-            if (*pSz == '.' && ptrMode != 2) printf("?Detected Decimal('.') in integer conditions.");
+            if (*pSz == '.' && ptrMode != 2) {
+                printf("?Detected Decimal('.') in integer conditions.");
+                return NULL;
+            }
             return pSz; /* returns pSz if *pSz is not between '0' to '9' and neq to ',' */
         }
     }
@@ -236,13 +242,16 @@ condProc(int cmdPos, int condNum) { /* set int type conditions, returns conditio
                 return condCnt;
             }
         }
-        if (i == 0 || i == 1) cp = findNextCond(cp);
+        if (i == 0 || i == 1) {
+            cp = findNextCond(cp);
+            if (cp == NULL) return -1;
+        }
     }
     return condCnt;
 }
 
 void condErr(int condCnt) { /* prints condition count error */
-    printf("?Error condition count is not %d", condCnt); 
+    printf("?Error condition count is not %d.", condCnt); 
 }
 
 void prepIntCalc(BOOL isY) { /* store int value to g_buf for calculation */
@@ -278,12 +287,14 @@ void prepDblCalc(BOOL isY) { /* store double value to g_buf for calculation */
 
 void pAddrSet(int pos) { /* set pointers except for char types to mem + addr */
     if (pos == NULL) {
-        if (ptrMode == 1) pi = (mem + addr);
+        if (ptrMode == 0) pc = (mem + addr);
+        else if (ptrMode == 1) pi = (mem + addr);
         else if (ptrMode == 2) pd = (mem + addr);
         else if (ptrMode == 4) pu = (mem + addr);
     }
     else {
-        if (ptrMode == 1) pi = (mem + pos);
+        if (ptrMode == 0) pc = (mem + pos);
+        else if (ptrMode == 1) pi = (mem + pos);
         else if (ptrMode == 2) pd = (mem + pos);
         else if (ptrMode == 4) pu = (mem + pos);
     }
@@ -455,7 +466,7 @@ exeCond() {
 
 cmdProc() { /* Interpret commands */
     BOOL err = FALSE;
-    int bracketCnt = 0, parenthesesCnt = 0, condCnt = 0, iRet = 0, i = 0, j = 0;
+    int bracketCnt = 0, parenthesesCnt = 0, iRet = 0, i = 0, j = 0;
     char currCmd;
 
     for (i = 0; cmdBuf[i] != NULL; i++) {
@@ -464,6 +475,7 @@ cmdProc() { /* Interpret commands */
         case 'a':
             iRet = condProc(i, 2);
             if (iRet != 2) {
+                if (iRet == -1) return 1;
                 condErr(2);
                 return 1;
             }
@@ -475,9 +487,10 @@ cmdProc() { /* Interpret commands */
         case 'c':
             iRet = condProc(i, 3);
             if (iRet != 3) {
-                condErr(3);
                 isCondPresent = FALSE;
                 g_cmdCond = NULL;
+                if (iRet == -1) return 1;
+                condErr(3);
                 return 1;
             }
             else {
@@ -490,11 +503,12 @@ cmdProc() { /* Interpret commands */
         case 'd':
             if (mem[addr] > CHAR_MIN || isUnsigned == FALSE) ++mem[addr];
             else if (mem[addr] > 0 || isUnsigned == TRUE) ++mem[addr];
-            else printf("?Error lower limit of byte value. cmd at %d", i);
+            else printf("?Error lower limit of byte value. cmd at %d, line %u", i, uLineCnt);
             break;
         case 'e':
             iRet = condProc(i, 2);
             if (iRet != 2) {
+                if (iRet == -1) return 1;
                 condErr(2);
                 return 1;
             }
@@ -503,12 +517,13 @@ cmdProc() { /* Interpret commands */
         case 'f':
             iRet = condProc(i, 1);
             if (iRet != 1) {
+                if (iRet == -1) return 1;
                 condErr(1);
                 return 1;
             }
             else {
                 if (x > MEM_SIZE - 1 || x < 0) {
-                    printf("?Error address out of range. cmd at %d", i);
+                    printf("?Error address out of range. cmd at %d, line %u", i, uLineCnt);
                     return 2;
                 }
                 addr = x;
@@ -521,49 +536,68 @@ cmdProc() { /* Interpret commands */
             if (mem[addr] == 13) printf("\n");
             break;
         case 'h':
-            if (isFileLoaded == FALSE) {
+            if (!isExec) {
                 printf("?This command can be used ONLY in file(s). cmd at %d", i);
                 return 1;
             }
             else {
                 iRet = condProc(i, 1);
                 if (iRet != 1) {
+                    if (iRet == -1) return 1;
                     condErr(1);
                     return 1;
                 }
-                else {
-                    g_iBuf = x;
-                    return -2;
-                }
+                else return -2;
             }
             break;
         case 'i':
             if (mem[addr] < CHAR_MAX || isUnsigned == FALSE) ++mem[addr];
             else if (mem[addr] < UCHAR_MAX || isUnsigned == TRUE) ++mem[addr];
-            else printf("?Error upper limit of byte value, cmd at %d", i);
+            else printf("?Error upper limit of byte value, cmd at %d, line %u", i, uLineCnt);
             break;
         case 'j':
-            if (isFileLoaded == FALSE) {
+            if (!isExec) {
                 printf("?This command can be used ONLY in file(s). cmd at %d", i);
                 return 1;
             }
             else {
-                /* rewind file and find corresponding number */
                 rewind(pFile);
-                
+                uLineCnt = 0;
+                iRet = condProc(i, 1);
+                if (iRet != 1) {
+                    if (iRet == -1) return 1;
+                    condErr(1);
+                    return 1;
+                }
+                else {
+                    j = 1;
+                    while (!feof(pFile)) {
+                        fgets(cmdBuf, BUF_SIZE, pFile);
+                        cmdBuf[szLen(cmdBuf) - 1] = NULL;
+                        iRet = atoi(cmdBuf);
+                        if (iRet == x) {
+                            j = 0;
+                            break;
+                        }
+                    }
+                    if (j) {
+                        printf("?Error line number %d not found, cmd at %d, line %u", x, i, uLineCnt);
+                        return 1;
+                    }
+                }
             }
             break;
         case 'k':
             initGlobalVar();
             break;
         case 'l':
-            if (isFileLoaded == TRUE) {
+            if (isFileLoaded) {
                 printf("?Error a file has already been loaded. Unload file first. cmd at %d", i);
                 return 4;
             }
             iRet = nameProc(i);
             if (iRet == 0) {
-                printf("?Name marker error, cmd at %d", i);
+                printf("?Name marker error, cmd at %d, line %u", i, uLineCnt);
                 return 1;
             }
             else {
@@ -582,6 +616,7 @@ cmdProc() { /* Interpret commands */
         case 'm':
             iRet = condProc(i, 2);
             if (iRet != 2) {
+                if (iRet == -1) return 1;
                 condErr(2);
                 return 1;
             }
@@ -609,6 +644,7 @@ cmdProc() { /* Interpret commands */
         case 'n':
             iRet = condProc(i, 1);
             if (iRet != 1) {
+                if (iRet == -1) return 1;
                 condErr(1);
                 return 1;
             }
@@ -617,6 +653,7 @@ cmdProc() { /* Interpret commands */
         case 'o':
             iRet = condProc(i, 2);
             if (iRet != 2) {
+                if (iRet == -1) return 1;
                 condErr(2);
                 return 1;
             }
@@ -626,7 +663,7 @@ cmdProc() { /* Interpret commands */
             printf("%c", mem[addr]);
             break;
         case 'q':
-            if (isFileLoaded == FALSE) {
+            if (!isFileLoaded) {
                 printf("?Error Quine requires loading file. cmd at %d", i);
                 return 4;
             }
@@ -636,6 +673,7 @@ cmdProc() { /* Interpret commands */
                     printf(fBuf);
                 }
                 rewind(pFile);
+                uLineCnt = 0;
             }
             break;
         case 'r':
@@ -665,17 +703,18 @@ cmdProc() { /* Interpret commands */
             break;
         case 'v': return 0;
         case 'w':
-            condCnt = condProc(i, 1);
-            if (condCnt != 1) {
+            iRet = condProc(i, 1);
+            if (iRet != 1) {
+                if (iRet == -1) return 1;
                 condErr(1);
                 return 1;
             }
             if ((x > CHAR_MAX || x < CHAR_MIN) && !ptrMode) {
-                printf("?Error value X is out of range. cmd at %d", i);
+                printf("?Error value X is out of range. cmd at %d, line %u", i, uLineCnt);
                 return 2;
             }
             else if ((x > UCHAR_MAX || x < 0) && ptrMode == 3) {
-                printf("?Error value X is out of range. cmd at %d", i);
+                printf("?Error value X is out of range. cmd at %d, line %u", i, uLineCnt);
                 return 2;
             }
             /* Does not check value range for int, uint, and double */
@@ -689,7 +728,7 @@ cmdProc() { /* Interpret commands */
         case 'x':
             return -1;
         case 'y':
-            if (isDebugMode == FALSE) {
+            if (!isDebugMode) {
                 isDebugMode = TRUE;
                 printf("Debug mode on");
             }
@@ -704,6 +743,7 @@ cmdProc() { /* Interpret commands */
         case '!':
             iRet = condProc(i, 2);
             if (iRet != 2) {
+                if (iRet == -1) return 1;
                 condErr(2);
                 return 1;
             }
@@ -722,11 +762,12 @@ cmdProc() { /* Interpret commands */
             break;
         case '%':
             if (ptrMode == 2) {
-                printf("?Error modulus operation in floating point format. cmd at %d", i);
+                printf("?Error modulus operation in floating point format. cmd at %d, line %u", i, uLineCnt);
                 return 1;
             }
             iRet = condProc(i, 2);
             if (iRet != 2) {
+                if (iRet == -1) return 1;
                 condErr(2);
                 return 1;
             }
@@ -757,13 +798,14 @@ cmdProc() { /* Interpret commands */
         case '^':
             iRet = condProc(i, 2);
             if (iRet != 2) {
+                if (iRet == -1) return 1;
                 condErr(2);
                 return 1;
             }
             else {
                 err = cmpProc(currCmd);
                 if (err) {
-                    printf(" cmd at %d", i);
+                    printf(" cmd at %d, line %u", i, uLineCnt);
                     return 1;
                 }
             }
@@ -771,13 +813,14 @@ cmdProc() { /* Interpret commands */
         case '&':
             iRet = condProc(i, 2);
             if (iRet != 2) {
+                if (iRet == -1) return 1;
                 condErr(2);
                 return 1;
             }
             else {
                 err = cmpProc(currCmd);
                 if (err) {
-                    printf(" cmd at %d", i);
+                    printf(" cmd at %d, line %u", i, uLineCnt);
                     return 1;
                 }
             }
@@ -785,6 +828,7 @@ cmdProc() { /* Interpret commands */
         case '*':
             iRet = condProc(i, 2);
             if (iRet != 2) {
+                if (iRet == -1) return 1;
                 condErr(2);
                 return 1;
             }
@@ -821,8 +865,9 @@ cmdProc() { /* Interpret commands */
             }
             break;
         case '-':
-            condCnt = condProc(i, 2);
-            if (condCnt != 2) {
+            iRet = condProc(i, 2);
+            if (iRet != 2) {
+                if (iRet == -1) return 1;
                 condErr(2);
                 return 1;
             }
@@ -830,6 +875,7 @@ cmdProc() { /* Interpret commands */
             if (err) return 2;
             iRet = condProc(i, 2);
             if (iRet != 2) {
+                if (iRet == -1) return 1;
                 condErr(2);
                 return 1;
             }
@@ -864,13 +910,14 @@ cmdProc() { /* Interpret commands */
             }
             break;
         case '_':
-            pAddrSet(NULL);
+            pd = (mem + addr);
             printf("%.12g", *pd);
             pAddrInit();
             break;
         case '+':
-            condCnt = condProc(i, 2);
-            if (condCnt != 2) {
+            iRet = condProc(i, 2);
+            if (iRet != 2) {
+                if (iRet == -1) return 1;
                 condErr(2);
                 return 1;
             }
@@ -878,6 +925,7 @@ cmdProc() { /* Interpret commands */
             if (err) return 2;
             iRet = condProc(i, 2);
             if (iRet != 2) {
+                if (iRet == -1) return 1;
                 condErr(2);
                 return 1;
             }
@@ -919,11 +967,11 @@ cmdProc() { /* Interpret commands */
             else if (ptrMode == 2) memCpy((mem + addr), DBL_SIZE, g_buf);
             break;
         case '\\':
-            if (ptrMode == 0) printf("%d", mem[addr]);
-            else if (ptrMode == 3) printf("%u", mem[addr]);
+            if (ptrMode == 3) printf("%u", mem[addr]);
             else {
                 pAddrSet(NULL);
-                if (ptrMode == 1) printf("%d", *pi);
+                if (ptrMode == 0) printf("%d", *pc);
+                else if (ptrMode == 1) printf("%d", *pi);
                 else if (ptrMode == 2) printf("%d", *pd);
                 else if (ptrMode == 4) printf("%u", *pu);
                 pAddrInit();
@@ -938,7 +986,7 @@ cmdProc() { /* Interpret commands */
             else {
                 err = cmpProc(currCmd);
                 if (err) {
-                    printf(" cmd at %d", i);
+                    printf(" cmd at %d, line %u", i, uLineCnt);
                     return 1;
                 }
             }
@@ -965,14 +1013,14 @@ cmdProc() { /* Interpret commands */
         case '<':
             if (addr > 0) --addr;
             else {
-                printf("?Error address lower limit. cmd at %d", i);
+                printf("?Error address lower limit. cmd at %d, line %u", i, uLineCnt);
                 return 2;
             }
             break;
         case '>':
             if (addr < MEM_SIZE - 1) ++addr;
             else {
-                printf("?Error address upper limit. cmd at %d", i);
+                printf("?Error address upper limit. cmd at %d, line %u", i, uLineCnt);
                 return 2;
             }
             break;
@@ -1022,7 +1070,7 @@ cmdProc() { /* Interpret commands */
             help();
             break;
         case '`':
-            printf("?Error name marker without command");
+            printf("?Error name marker without command. cmd at %d, line %u", i, uLineCnt);
             return 1;
         case '~':
             iRet = condProc(i, 1);
@@ -1033,7 +1081,7 @@ cmdProc() { /* Interpret commands */
             else {
                 err = cmpProc(currCmd);
                 if (err) {
-                    printf(" cmd at %d", i);
+                    printf(" cmd at %d, line %u", i, uLineCnt);
                     return 1;
                 }
             }
@@ -1080,12 +1128,12 @@ cmdProc() { /* Interpret commands */
                 break;
             }
             else if (iRet == -1) {
-                printf(" cmd at %d", i);
+                printf(" cmd at %d, line %u", i, uLineCnt);
                 return 1;
             }
             break;
         case ')':
-            if (isDebugMode) printf("\nEnd of if statement at %d\n", i);
+            if (isDebugMode) printf("\nEnd of if statement at %d, line %u\n", i, uLineCnt);
             break;
         }
         if (isDebugMode) {
@@ -1118,30 +1166,70 @@ exeFile() {
     /* implement file execution */
     char rtnVal = 0;
     BOOL isUnbalanced = FALSE;
+    uLineCnt = 1;
+    isExec = TRUE;
 
     while (!feof(pFile)) {
         fgets(cmdBuf, BUF_SIZE, pFile);
-        cmdBuf[szLen(cmdBuf) - 1] = NULL; /* write NULL */
+        if (!feof(pFile) && cmdBuf[szLen(cmdBuf)] != NULL) cmdBuf[szLen(cmdBuf) - 1] = NULL;
+        uLineCnt++;
 
         isUnbalanced = balanceChk();
         rtnVal = cmdProc();
 
         if (isUnbalanced == TRUE) {
             printf("?Error parentheses and/or brackets are not balanced");
+            uLineCnt = 0;
+            isExec = FALSE;
             return 1;
         }
         if (termination) {
             termination = FALSE;
             rewind(pFile);
+            uLineCnt = 0;
+            isExec = FALSE;
             return 0;
         }
 
-        if (rtnVal == 1) printf("\nCommand execution halted(Syntax Error)");
-        else if (rtnVal == 2) printf("\nCommand execution halted(Memory/Value Range Error)");
-        else if (rtnVal == 3) printf("\nCommand execution halted(Internal/External Error)");
-        else if (rtnVal == 4) printf("\nCommand execution halted(Miscellaneous Error)");
+        if (rtnVal == 1) {
+            printf("\nCommand execution halted(Syntax Error)");
+            uLineCnt = 0;
+            rewind(pFile);
+            isExec = FALSE;
+            return 1;
+        }
+        else if (rtnVal == 2) {
+            printf("\nCommand execution halted(Memory/Value Range Error)");
+            uLineCnt = 0;
+            rewind(pFile);
+            isExec = FALSE;
+            return 1;
+        }
+        else if (rtnVal == 3) {
+            printf("\nCommand execution halted(Internal/External Error)");
+            uLineCnt = 0;
+            rewind(pFile);
+            isExec = FALSE;
+            return 1;
+        }
+        else if (rtnVal == 4) {
+            printf("\nCommand execution halted(Miscellaneous Error)");
+            uLineCnt = 0;
+            rewind(pFile);
+            isExec = FALSE;
+            return 1;
+        }
+        else if (rtnVal == -2) {
+            uLineCnt = 0;
+            printf("\nProgram handled error(%d)", x);
+            initGlobalVar();
+            rewind(pFile);
+            isExec = FALSE;
+            return -1;
+        }
     }
     rewind(pFile);
+    uLineCnt = 0;
     return 0;
 }
 
@@ -1159,7 +1247,7 @@ main() {
     while (1) {
         printf("\nREADY(%d,%04d)>> ", ptrMode, addr);
         fgets(cmdBuf, BUF_SIZE, stdin);
-        cmdBuf[szLen(cmdBuf) - 1] = NULL; /* write NULL */
+        if (szLen(cmdBuf) < BUF_SIZE) cmdBuf[szLen(cmdBuf) - 1] = NULL; /* write NULL */
         isUnbalanced = balanceChk();
         if (isUnbalanced == TRUE) printf("?Error parentheses and/or brackets are not balanced");
         else {
@@ -1170,11 +1258,7 @@ main() {
             else if (rtnVal == 4) printf("\nCommand execution halted(Miscellaneous Error)");
             else if (rtnVal == RUN_FILE) {
                 rtnVal = exeFile();
-                if (rtnVal == -2) {
-                    printf("\nProgram handled error(%d)", g_iBuf);
-                    initGlobalVar();
-                }
-                else if (rtnVal == 1) printf("... Program execution halted.");
+                if (rtnVal == 1) printf("... Program execution halted.");
                 rtnVal = 0;
                 continue;
             }
