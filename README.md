@@ -179,7 +179,7 @@ Interpreter
 ---
 Interpreter is written in C language. Please let me know if you find any bug(s).
 
-I am simply a hobbyist programmer, therefore the source code may be complicated to read and/or have bugs. The descriptions below are based on tests performed on MS Windows(x86) Environment. Note: Interpreter built by gcc and tested on Debian linux.
+I am just a hobbyist programmer, therefore the source code may be complicated to read and/or have bugs. The descriptions below are based on tests performed on MS Windows(x86) Environment. Note: Interpreter built by gcc and tested on Debian linux.
 
 - Specifications
 
