@@ -140,6 +140,12 @@ Example: l`c:\abf\prg.abf`
 - Any characters after ';' and in the same line will be considered as remarks/comments.
 - ':' command stores -1(0xff) if the value at X is less than the value at Y, 0 if it is equal, 1(0x01) if it is greater.
 - '{' and '}' are not commands. They can only be used for condition of if statement.
+- Corresponding brackets and parentheses must be in the same line
+```
+z'$f0w100>[ip<d>] ;Correct
+z'$f0w100>[ip<
+d>]               ;Wrong!
+```
 
 Example Programs
 ---
