@@ -8,6 +8,7 @@ ABF is an esoteric programming language based on BrainFuck. ABF has much more co
 - Function support(using jump commands)
 - integrated memory zerofill command
 - Significantly more complex syntax
+- Spaghettification ability with jumps
 
 Contents
 ---
