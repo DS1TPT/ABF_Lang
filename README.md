@@ -86,7 +86,6 @@ Example: '#f0w2147483647$f2w0 ;value from 0 to 3: 0x7fff00ff
 Example:'#c10,32,!(f0\) ;if int value at address 10 to 13 is not equal to value at address 32 to 35 then f0\
 ```
 - Bit-wise operations and modulus are prohibited when double pointer is active.
-- '=' 명령은 현재 포인터 타입에 맞게 값을 저장합니다. 버퍼에 저장되는 연산결과와 크기는 명령어와 포인터 모드의 영향을 받으며, 버퍼에 저장된 연산값을 잘못된 포인터 타입으로 읽는 경우 예기치 못한 동작이 발생할 수 있습니다. ':' 명령은 연산결과를 버퍼의 첫 바이트에 signed char 형식으로 값을 기록하며, 그 이외의 명령은 연산결과를 포인터 타입의 크기만큼 버퍼의 첫 부분부터 값을 기록합니다.
 - '=' command saves the value at buffer to current pointer according to the pointer type. The operation result and size stored in the buffer are affected by the command and pointer mode, and unexpected behavior may occur if the operation value stored in the buffer is read with the wrong pointer type. The':' command writes the operation result to the first byte of the buffer in signed char format, while other commands write the operation result as much as the size of data type from the first part of the buffer.
 ```
 Data stored in buffer after z'#f0w15f4w31f8:0,4 :
@@ -153,7 +152,7 @@ Press Enter(Return) to continue
 z'$f0w13>w10>w7[gc0,2,e(b)c1,2,e(b)]w88pz'$f0t
 ```
 
-함수 구현 예제(파일 실행에서만 가용)
+Function implementation example(File exe only)
 ```
 ;main
 1 z'$
@@ -196,7 +195,6 @@ Data types supported: char, unsigned char, int, unsigned int, double
 
 - Introduction
 
-win32 인터프리터는 Windows x86 시스템에서 구동할 수 있도록 빌드되어 있습니다. x86, x86_64 환경이 아니거나 리눅스를 사용하는 경우 직접 소스코드를 빌드해야 합니다.
 The win32 interpreter is built to run on Windows x86 systems. If you are not using an x86 or x86_64 environment, or if you are using Linux, you must build the source code yourself.
 
 When you start the interpreter, the following screen is displayed.
