@@ -18,7 +18,7 @@ Contents
 List of commands
 ---
 ```
-a: AND                                        []: while(*ptr != 0) loop bracket
+a: AND                                       []: while(*ptr != 0) loop bracket
 b: Break                                     `: name marker
 c: define Condition                          !: NEQ
 d: Decrement byte                            @: set double pointer
@@ -31,7 +31,7 @@ j: Jump                                      *: multiply
 k: Knockdown(initialize interpreter)         (): if parentheses
 l: Load file                                 -: subtract
 m: Match(copy value at X to Y)               _: print as double
-n: NOT                                        =: save product to current address
+n: NOT                                       =: save product to current address
 o: OR                                        +: add
 p: Print as char                             .: decimal, for double
 q: Quine                                     ,: separator
