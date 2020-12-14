@@ -1,6 +1,19 @@
 ABF, Ascii BrainFuck
 ===
-ABF is an esoteric programming language based on BrainFuck.
+ABF is an esoteric programming language based on BrainFuck. ABF supports much more commands and features for programming ease, while remaining is esoteric nature. Here are the list of features.
+- Various data types
+- Logical/comparative/four fundamental calculations/modulus/bit-wise operators
+- Error code handling (to interpreter)
+- Functions via jump
+- integrated memory Zerofill command
+- Significantly more complex syntax
+
+Contents
+---
+- List of commands
+- Syntax
+- Example programs
+- Interpreter
 
 List of commands
 ---
@@ -42,6 +55,7 @@ Handling Argument(s)
 - Argument type of commands except for 'w' are int(unsigned/signed type depends on pointer mode).
 - 'w'command's argument type is int when pointer type is char or int, and signed int or double when pointer type is double. Unsigned/signed type depends on pointer mode.
 - Arguments must be written right after a command without space or anything else.
+- Size of arguments are 4 Bytes when pointer type is int/char, and 8 bytes when pointer type is double.
 - Arguments must be separated using ','.
 ```
 Example: a0,5 ; *mem && *(mem + 5)
@@ -66,10 +80,21 @@ Example: '#f0w2147483647$f2w0 ;value from 0 to 3: 0x7fff00ff
 - '\\' command reads and outputs the value as much as the length corresponding to the pointer type. In the case of a double pointer, the value is converted to an integer and output.
 - '_' command reads and outputs the value in floating-point type as much as the length of double type.
 - '/' command calculates quotient if pointer type is not double.
-- ':' command saves product to buffer in signed char type.
+- ':' command ALWAYS saves product to buffer in signed char type.
 - When checking conditions for if statement, interpreter reads and compares data in previously set pointer type.
 ```
 Example:'#c10,32,!(f0\) ;if int value at address 10 to 13 is not equal to value at address 32 to 35 then f0\
+```
+- Bit-wise operations and modulus are prohibited when double pointer is active.
+- '=' 명령은 현재 포인터 타입에 맞게 값을 저장합니다. 버퍼에 저장되는 연산결과와 크기는 명령어와 포인터 모드의 영향을 받으며, 버퍼에 저장된 연산값을 잘못된 포인터 타입으로 읽는 경우 예기치 못한 동작이 발생할 수 있습니다. ':' 명령은 연산결과를 버퍼의 첫 바이트에 signed char 형식으로 값을 기록하며, 그 이외의 명령은 연산결과를 포인터 타입의 크기만큼 버퍼의 첫 부분부터 값을 기록합니다.
+- '=' command saves the value at buffer to current pointer according to the pointer type. The operation result and size stored in the buffer are affected by the command and pointer mode, and unexpected behavior may occur if the operation value stored in the buffer is read with the wrong pointer type. The':' command writes the operation result to the first byte of the buffer in signed char format, while other commands write the operation result as much as the size of data type from the first part of the buffer.
+```
+Data stored in buffer after z'#f0w15f4w31f8:0,4 :
+ff 00 0f 00 01 f0 00 00 00...00
+Data stored in buffer after z'#f0w15f4w31f8+0,4 :
+2e 00 0f 00 01 f0 00 00 00...00
+Date stored in buffer after z'$f0w15f4w31f8+0,4 :
+2e 00 00 00...00
 ```
 Command usage and syntax
 - Before if statement, conditions must be defined using 'c' command.
@@ -99,17 +124,19 @@ READY(0,0000)>>
 - 'm' command is affected by pointer type.
 - 'p' command prints current byte value as char.
 - 'q' command cannot be used without loading a file.
+- 'r' command is similar to return. It executed codes in line right after the line stored in position buffer by 'y' command.
 - 't' command is used for terminating file execution without error. It does not return error code.
 - Any characters after 't' will be considered as remarks/comments.
-- 'v' command can only be used in file execution. 'v' executes commands at the next line.
+- 'v' executes commands at the next line.
+- 'y' command saves current BASIC style position to position buffer.
 - Nested if and loop are supported.
+- Function can be implemented in file(s) using 'j', 'r', 'y' commands. Please refer to Example programs.
 - When loading a file, you must put '`' before and after the directory and name of the file.
 ```
 Example: l`c:\abf\prg.abf`
 ```
 - '/' command uses the value at X as numerator, and the value at Y as denominator.
-- ';' command stops execution of the line immediately. Any characters after ';' and in the same line will be considered as remarks/comments.
-  - Caution: 'v' and ';' has same function internally, but since the purpose of use of the two is different, it is recommended to use them separately.
+- Any characters after ';' and in the same line will be considered as remarks/comments.
 - ':' command stores -1(0xff) if the value at X is less than the value at Y, 0 if it is equal, 1(0x01) if it is greater.
 - '{' and '}' are not commands. They can only be used for condition of if statement.
 
@@ -120,4 +147,144 @@ print Hello, world
 z'$f0w72>w101>w108m2,3f4w111>w44>w32>w119m4,8f9w114m3,10f11w100>w10>w13f0
 ;write "Hello, world" from address 0 and then set address to 0
 [p>]zt ;print and increment pointer(address) while byte is not 0, fill memory with 0 and terminate after loop
+```
+Press Enter(Return) to continue
+```
+z'$f0w13>w10>w7[gc0,2,e(b)c1,2,e(b)]w88pz'$f0t
+```
+
+함수 구현 예제(파일 실행에서만 가용)
+```
+;main
+1 z'$
+10 yj200
+20 yj100
+30 yj110
+40 yj200
+50 t
+
+;Fn, prints "Hello, world"
+100 z'$f0w72>w101>w108m2,3f4w111>w44>w32>w119m4,8f9w114m3,10f11w100>w10>w13f0[p>]
+101 r
+
+;Fn, prints "Hello, world" 4 times
+110 z'$f16w4f0w72
+111 [>w101>w108m2,3f4w111>w44>w32>w119m4,8f9w114m3,10f11w100>w10>w13f0[pw0>]f15ic15,16,e(b)f0w72]
+112 r
+
+;Fn, Zerofill, set signed char pointer, and set pointer to address 0.
+200 z'$c0,0,ef0r
+```
+
+Interpreter
+---
+Interpreter is written in C language. Please let me know if you find any bug(s).
+
+I am simply a hobbyist programmer, therefore the source code may be complicated to read and/or have bugs. The descriptions below are based on tests performed on MS Windows(x86) Environment. Note: Interpreter built by gcc and tested on Debian linux.
+
+- Specifications
+
+Memory available: 4096 Bytes
+
+Command buffer: 1024 Bytes including null
+
+Size of int: 4 Bytes
+
+Size of double: 8 Bytes
+
+Data types supported: char, unsigned char, int, unsigned int, double
+
+- Introduction
+
+win32 인터프리터는 Windows x86 시스템에서 구동할 수 있도록 빌드되어 있습니다. x86, x86_64 환경이 아니거나 리눅스를 사용하는 경우 직접 소스코드를 빌드해야 합니다.
+The win32 interpreter is built to run on Windows x86 systems. If you are not using an x86 or x86_64 environment, or if you are using Linux, you must build the source code yourself.
+
+When you start the interpreter, the following screen is displayed.
+```
+Ascii BrainFuck Language Interpreter Prompt
+int size: 4 Bytes, double size: 8 Bytes
+int range: -2147483648 to 2147483647, double range: (+-) 2.22507385851e-308 to 1.79769313486e+308
+Memory size: 4096 Bytes
+Maximum command length per line: 1024 Bytes with NULL
+***Type ? for commands***
+
+READY(0,0000)>>
+```
+When the interpreter is started, the size and range of the int and double data types are displayed as shown in the screen above. It also prints the size of memory and the size of commands that can be entered per line.
+When the interpreter processed command(s) and waits for the next command, the following is output:
+```
+READY(x,yyyy)>>
+```
+x represents the current pointer mode. There are 5 pointer modes: 0: char, 1: int, 2: double, 3: unsigned char, and 4: unsigned int.
+yyyy represents the current memory address in decimal.
+
+When loading a file, you must specify a path and extension. The output values are different when loading and executing a file on one line and when executing the next line after loading a file. As an example, if you load and run the hw.abf file, the following output is displayed.
+```
+READY(0,0000)>> l`c:\abf\hw.abf`
+File Loaded c:\abf\hw.abf
+READY(0,0000)>> s
+Hello, world
+
+READY(0,0014)>> ku
+
+READY(0,0000)>> l`c:\abf\hw.abf`s
+File Loaded c:\abf\hw.abfHello, world
+```
+As in the example, if both loading and execution are processed on one line, the output of the program is output without line breaks. On the other hand, if you run the file on the next line after loading, you can see that "Hello, world" is displayed normally.
+
+If an error occurs during command execution, an error message is displayed and the command execution is stopped. If the file is running, the file will stop being executed. An example error message is as follows:
+```
+READY(0,0000)>> `
+?Error name marker without command. cmd at 0, line 0
+Command execution halted(Syntax Error)
+READY(0,0000)>>
+```
+The error message specifies where the error occurred in the command, such as "cmd at 0, line 0". If line is 0, an error occurred while entering and executing a command in the interpreter without loading a file. Error messages are output in the format "?Error ...". After that, in the next line, "Command execution halted(...)" specifies what kind of error occurred. The example above has a syntax error.
+
+Before executing the command, the interpreter checks whether the number of opening and closing parts of the parentheses () of the if statement and the brackets [] of the loop statement are the same. If the number of open parts and the number of closed parts do not match, the following error message is displayed.
+```
+READY(0,0000)>> []]
+?Error parentheses and/or brackets are not balanced
+READY(0,0000)>>
+```
+In the interpreter, the 'g' command performs the same function as MSVC's non-standard function _getch(). In other words, as soon as a character is entered on the keyboard, the value is stored in the memory. However, if the operating system is not MS Windows or Linux, the 'g' command may not be executed normally. In this case, the user must modify the source code and implement it.
+
+When writing a value to memory as an int or double type, the interpreter checks that the memory range is not exceeded. The maximum value of the memory address is 4095. If an address exceeding 4092 for int and 4088 for double is set, the maximum value of memory address is exceeded and an error message is displayed.
+```
+READY(0,4092)>> #w5647
+
+READY(1,4092)>> >w5647
+?Error address out of range. cmd at 1
+Command execution halted(Memory/Value Range Error)
+READY(1,4093)>> @f4088w2.2
+
+READY(2,4088)>> >w2.2
+?Error address out of range. cmd at 1
+Command execution halted(Memory/Value Range Error)
+READY(2,4089)>>
+```
+If the pointer mode is double, an error message is output if the bitwise operator and modulus operator are used.
+```
+READY(0,0000)>> @%1,10
+?Error modulus operation in floating point format. cmd at 1, line 0
+Command execution halted(Syntax Error)
+READY(2,0000)>> @|1,10
+?Error bitwise operation in floating point format(|). cmd at 1, line 0
+Command execution halted(Syntax Error)
+READY(2,0000)>>
+```
+If you use the 'w' command while using an int or double pointer, the interpreter does not check the size of the input value.
+
+If the interpreter receives an error from the program, it displays an error code and then stops executing the program.
+```
+READY(0,0000)>> s
+
+Program handled error(-1)
+READY(0,0000)>>
+```
+The operation result stored in the buffer is retained unless a command that changes the value of the buffer is executed. After performing an operation using this behavior, you can save the operation result in multiple addresses in the memory.
+```
+READY(0,0000)>> w1>w2:0,1>=\>=\
+-1-1
+READY(0,0003)>>
 ```
