@@ -20,9 +20,8 @@
 /*
 To-do list
 1. check for unsigned calculations
-2. use pc for ptrMode 0
-3. find logic errors
-4. fine logic errors related to four fundamental calculations
+2. find logic errors
+3. fine logic errors related to four fundamental calculations
 ?. debug
 ???. simplify after finishing implementation and debugging
 */
