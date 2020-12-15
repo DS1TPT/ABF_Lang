@@ -106,7 +106,7 @@ Command usage and syntax
 ```
 Example: c0,2,!(...) ;if (*mem != *(mem + 2)) {...}
 ```
-- Among the operators passed as arguments to the 'c' command, '~' and 'n' require only one argument for calculation. Internally, ut uses the value of address X. You can pass arguments in two ways if you want to use '~' or 'n'.
+- Among the operators passed as arguments to the 'c' command, '~' and 'n' require only one argument for calculation. Internally, they use the value of address X, so argument Y will be ignored. You can pass arguments in two ways.
 ```
 Method 1: c1,1,n(...) ;if (! *(mem + 1)) {...}
 Method 2: c1,,n(...)
