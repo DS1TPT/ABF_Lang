@@ -52,6 +52,9 @@ z: Zerofill memory                           \: print as integer
 
 Syntax
 ---
+*** Note ***
+In the descriptions of the example codes below, "mem" is a representation of memory in a form of unsigned char array.
+
 Handling Argument(s)
 - Every calculations' operand(s) is/are value at address X and/or adresss Y.
 - Argument type of commands except for 'w' are int(unsigned/signed type depends on pointer mode).
@@ -102,6 +105,11 @@ Command usage and syntax
 - 'c' command needs 3 arguments. Argument order is: X, Y, comparative/logical operation command.
 ```
 Example: c0,2,!(...) ;if (*mem != *(mem + 2)) {...}
+```
+- Among the operators passed as arguments to the 'c' command, '~' and 'n' require only one argument for calculation. Internally, ut uses the value of address X. You can pass arguments in two ways if you want to use '~' or 'n'.
+```
+Method 1: c1,1,n(...) ;if (! *(mem + 1)) {...}
+Method 2: c1,,n(...)
 ```
 - 'b' command stops command execution and starts it from next ']'.
 - byte, pointer increment/decrement will not be affected by the pointer type.
