@@ -1,6 +1,6 @@
 ABF, Ascii BrainFuck
 ===
-ABF is an esoteric programming language based on BrainFuck. ABF has much more commands and features for programming ease(lol), while keeping its esoteric nature. Here are the list of features.
+ABF is an esoteric programming language inspired by BrainFuck. ABF has more commands and features for programming ease(lol), while keeping its esoteric nature. Here are the list of features.
 - Various data types
 - Logical/comparative/four fundamental calculations/modulus/bit-wise operators
 - Error code handling (to interpreter)
@@ -48,6 +48,11 @@ y: save current pos to pos buffer            ": set unsigned type
 z: Zerofill memory                           \: print as integer
 |: bitwise OR                                {: condition *(p+X) < *(p+Y)
 ~: bitwise NOT                               }: condition *(p+X) > *(p+Y)
+```
+Note: 4 commands of BF('+', '-', '.', ',') are changed to 'i', 'd', 'p', 'g'. Here's the example of BF Hello, world program translated into ABF.
+```
+++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++. ;BF
+iiiiiiii[>iiii[>ii>iii>iii>i<<<<d]>i>i>d>>i[<]<d]>>p>dddpiiiiiiippiiip>>p<dp<piiipddddddpddddddddp>>ip>iip ;ABF
 ```
 
 Syntax
