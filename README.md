@@ -238,9 +238,9 @@ Memory available: 65535 Bytes
 
 Command buffer: 4096 Bytes including null
 
-Size of int: 4 Bytes (fixed)
+Size of int: 4 Bytes(system dependant)
 
-Size of double: 8 Bytes (depends on system)
+Size of double: 8 Bytes(system dependant)
 
 Data types supported: char, unsigned char, int, unsigned int, double
 
@@ -251,7 +251,7 @@ The win32 interpreter is built to run on Windows x86 systems. If you are not usi
 When you start the interpreter, the following screen is displayed.
 ```
 Ascii BrainFuck Language Interpreter Prompt
-int size: 4 Bytes(fixed), double size: 8 Bytes
+int size: 4 Bytes, double size: 8 Bytes
 int range: -2147483648 to 2147483647, double range: (+-) 2.22507385851e-308 to 1.79769313486e+308
 Memory size: 65535 Bytes
 Maximum command length per line: 4096 Bytes with NULL
