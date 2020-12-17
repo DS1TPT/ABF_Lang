@@ -36,7 +36,7 @@ m: Match(copy value at X to Y)               _: print as double
 n: NOT                                       =: save product to current address
 o: OR                                        +: add
 p: Print as char                             .: decimal, for double
-q: Quine                                     ,: separator
+q: print source code                         ,: separator
 r: Return(jump) to pos pointed by pos buffer <: decrement pointer
 s: Start file execution                      >: increment pointer
 t: Terminate file execution                  /: divide(*(p+X)/*(p+Y))
@@ -139,7 +139,7 @@ READY(0,0000)>>
 - 'k' command initializes pointer type, internal buffers, settings, etc. However, the file remains open.
 - 'm' command is affected by pointer type.
 - 'p' command prints current byte value as char.
-- 'q' command cannot be used without loading a file.
+- 'q' command cannot be used without loading a file. Also it cannot be used in file(s).
 - 'r' command is similar to return. It executed codes in line right after the line stored in position buffer by 'y' command.
 - 't' command is used for terminating file execution without error. It does not return error code.
 - Any characters after 't' will be considered as remarks/comments.
