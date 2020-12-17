@@ -23,12 +23,12 @@ List of commands
 a: AND                                       []: while(*ptr != 0) loop bracket
 b: Break                                     `: name marker
 c: define Condition                          !: NEQ
-d: Decrement byte                            @: set double pointer
+d: Decrement value                           @: set double pointer
 e: EQU                                       #: set integer pointer
 f: Forward(set ptr to X)                     $: set char pointer
 g: Get keyboard input and save as uchar      %: modulus
 h: Handle Error code                         ^: bitwise XOR
-i: Increment byte                            &: bitwise AND
+i: Increment value                           &: bitwise AND
 j: Jump                                      *: multiply
 k: Knockdown(initialize interpreter)         (): if parentheses
 l: Load file                                 -: subtract
@@ -46,13 +46,13 @@ w: Write X                                   :: compare
 x: close interpreter                         ': set signed type
 y: save current pos to pos buffer            ": set unsigned type
 z: Zerofill memory                           \: print as integer
-|: bitwise OR                                {: condition *(p+X) < *(p+Y)
-~: bitwise NOT                               }: condition *(p+X) > *(p+Y)
+|: bitwise OR                                {: bit shift to left
+~: bitwise NOT                               }: bit shift to right
 ```
-Note: 4 commands of BF('+', '-', '.', ',') are changed to 'i', 'd', 'p', 'g'. Here's the example of BF Hello, world program translated into ABF.
+Note: 4 commands of BF('+', '-', '.', ',') are changed to 'i', 'd', 'p', 'g'. But 'i' and 'd' work a little bit different because they can also be used to increment/decrement the value of 32b integer and 64b double. Here's the example of BF Hello, world program translated into ABF.
 ```
 ++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++. ;BF
-iiiiiiii[>iiii[>ii>iii>iii>i<<<<d]>i>i>d>>i[<]<d]>>p>dddpiiiiiiippiiip>>p<dp<piiipddddddpddddddddp>>ip>iip ;ABF
+$iiiiiiii[>iiii[>ii>iii>iii>i<<<<d]>i>i>d>>i[<]<d]>>p>dddpiiiiiiippiiip>>p<dp<piiipddddddpddddddddp>>ip>iip ;ABF, '$' is being put to do byte-wise increment/decrement operations
 ```
 
 Syntax
@@ -74,18 +74,18 @@ Example: a0,5 ; *mem && *(mem + 5)
 Data and pointer processing
 - size of char is 1B, size of int is 4B, and size of double is 8B For 32bit and 64bit systems.
 - Pointer type and signed/unsigned will be maintained without specific commands including 'k'.
-- Product of calculation is stored in buffer. To save the product to memory, you must set correct pointer type and use '=' command.
+- Product of calculations except for shift calculations('{' and '}') will be stored in buffer. To save the product to memory, you must set correct pointer type and use '=' command.
 ```
 Example: f0w100f1w250-1,0f2= ;buffer = *(mem + 1) - *mem; *(mem + 2) = buffer;
 ```
 - Address is set byte-wise. pointer type has no effect.
-- Every data read/write starts from the byte at the current pointer/address, and it's the Left-Most Byte.
+- Every data read/write starts from the byte at the current pointer/address.
 ```
-Example: #f5w255 ;write int type data from address 5 to 8. Data from 5 to 8: 0x000000ff
+Example: #f5w255 ;write int type data from address 5 to 8. Byte value from 5 to 8: 0xff000000(little-endian)
 ```
 - The type check of the value stored in the memory will NOT performed.
 ```
-Example: '#f0w2147483647$f2w0 ;value from 0 to 3: 0x7fff00ff
+Example: '#f0w2147483647$f2w0 ;value from 0 to 3: 0xffff007f(little-endian)
 ```
 - '\\' command reads and outputs the value as much as the length corresponding to the pointer type. In the case of a double pointer, the value is converted to an integer and output.
 - '_' command reads and outputs the value in floating-point type as much as the length of double type.
@@ -95,15 +95,16 @@ Example: '#f0w2147483647$f2w0 ;value from 0 to 3: 0x7fff00ff
 ```
 Example:'#c10,32,!(f0\) ;if int value at address 10 to 13 is not equal to value at address 32 to 35 then f0\
 ```
-- Bit-wise operations and modulus are prohibited when double pointer is active.
+- Bit-wise operations(except for shift) and modulus are prohibited when double pointer is active.
 - '=' command saves the value at buffer to current pointer according to the pointer type. The operation result and size stored in the buffer are affected by the command and pointer mode, and unexpected behavior may occur if the operation value stored in the buffer is read with the wrong pointer type. The':' command writes the operation result to the first byte of the buffer in signed char format, while other commands write the operation result as much as the size of data type from the first part of the buffer.
 ```
+Note: these data examples are in little-endian.
 Data stored in buffer after z'#f0w15f4w31f8:0,4 :
-ff 00 0f 00 01 f0 00 00 00...00
+ff 00 00 00 0f 00 00 00 1f 00 00 00 ... 00
 Data stored in buffer after z'#f0w15f4w31f8+0,4 :
-2e 00 0f 00 01 f0 00 00 00...00
+2e 00 00 00 0f 00 00 00 1f 00 00 00 ... 00
 Date stored in buffer after z'$f0w15f4w31f8+0,4 :
-2e 00 00 00...00
+2e 00 00 00 00 00 00 00 00 00 00 00 ... 00
 ```
 Command usage and syntax
 - Before if statement, conditions must be defined using 'c' command.
@@ -117,7 +118,8 @@ Method 1: c1,1,n(...) ;if (! *(mem + 1)) {...}
 Method 2: c1,,n(...)
 ```
 - 'b' command stops command execution and starts it from next ']'.
-- byte, pointer increment/decrement will not be affected by the pointer type.
+- pointer(address) incrementation and decrementation will not be affected by the pointer type.
+- 'i' and 'd' increments/decrements data value. These commands are affected by the pointer type. 
 - 'e' and '!' are comparative operator. They return 1 if condition is true, and 0 if condition is false.
 - 'g' command uses stdin.
 - 'h' command returns error code and halts program execution. Error code's type is unsigned int.
@@ -152,7 +154,7 @@ Example: l`c:\abf\prg.abf`
 - '/' command uses the value at X as numerator, and the value at Y as denominator.
 - Any characters after ';' and in the same line will be considered as remarks/comments.
 - ':' command stores -1(0xff) if the value at X is less than the value at Y, 0 if it is equal, 1(0x01) if it is greater.
-- '{' and '}' are not commands. They can only be used for condition of if statement.
+- '{' and '}' are shift operators. They shift bit value to left or right. These operators are affected by pointer type. Unlike the other bit-wise operators, these operators can be used when the double pointer is active.
 - Corresponding brackets and parentheses must be in the same line
 ```
 z'$f0w100>[ip<d>] ;Correct
