@@ -240,6 +240,8 @@ Memory available: 65535 Bytes
 
 Command buffer: 4096 Bytes including null
 
+File name length limit: 1024 Bytes including null
+
 Size of int: 4 Bytes(system dependant)
 
 Size of double: 8 Bytes(system dependant)
