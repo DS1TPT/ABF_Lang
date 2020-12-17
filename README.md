@@ -188,12 +188,42 @@ Function implementation example(File exe only)
 101 r
 
 ;Fn, prints "Hello, world" 4 times
-110 z'$f16w4f0w72
-111 [>w101>w108m2,3f4w111>w44>w32>w119m4,8f9w114m3,10f11w100>w10>w13f0[pw0>]f15ic15,16,e(b)f0w72]
+110 z'$f16w4f0w72>w101>w108m2,3f4w111>w44>w32>w119m4,8f9w114m3,10f11w100>w10>w13
+111 [f0[p>]f15ic15,16,e(b)]
 112 r
 
 ;Fn, Zerofill, set signed char pointer, and set pointer to address 0.
 200 z'$c0,0,ef0r
+```
+Big endian to little endian(32b int) example(File exe only)
+```
+;Write uint data 0x12345678 in Big endian
+1 f1000"#
+10 w2018915346\ ;uint 0x12345678 in Big endian
+15 yj160
+20 yj100
+30 \ ;305419896 should be printed
+40 yj160
+50 f1000yj150 ;185286120 should be printed
+60 yj160
+70 f1004yj150 ;120865218 should be printed
+80 zf0'$t
+
+;INT32 big endian to little endian
+100 "$f1000
+110 m1003,1004m1002,1005m1001,1006m1000,1007
+120 "#f1004
+130 r
+
+;print 4B integer byte-wise in integer type
+150 "$\>\>\>\<<<r
+;print line feed and CR
+160 "$f0w10pw13pw0r
+
+;memory map
+;address 0: char to print
+;address 1000 to 1003: big-endian int32
+;address 1004 to 1007: little-endian int32
 ```
 
 Interpreter
@@ -204,13 +234,13 @@ I am just a hobbyist, therefore the source code may be complicated to read and/o
 
 - Specifications
 
-Memory available: 4096 Bytes
+Memory available: 65535 Bytes
 
-Command buffer: 1024 Bytes including null
+Command buffer: 4096 Bytes including null
 
-Size of int: 4 Bytes
+Size of int: 4 Bytes (fixed)
 
-Size of double: 8 Bytes
+Size of double: 8 Bytes (depends on system)
 
 Data types supported: char, unsigned char, int, unsigned int, double
 
@@ -221,89 +251,85 @@ The win32 interpreter is built to run on Windows x86 systems. If you are not usi
 When you start the interpreter, the following screen is displayed.
 ```
 Ascii BrainFuck Language Interpreter Prompt
-int size: 4 Bytes, double size: 8 Bytes
+int size: 4 Bytes(fixed), double size: 8 Bytes
 int range: -2147483648 to 2147483647, double range: (+-) 2.22507385851e-308 to 1.79769313486e+308
-Memory size: 4096 Bytes
-Maximum command length per line: 1024 Bytes with NULL
+Memory size: 65535 Bytes
+Maximum command length per line: 4096 Bytes with NULL
+Byte order is Little endian.
 ***Type ? for commands***
 
-READY(0,0000)>>
+READY(0,00000)>>
 ```
-When the interpreter is started, the size and range of the int and double data types are displayed as shown in the screen above. It also prints the size of memory and the size of commands that can be entered per line.
+When the interpreter is started, the size and range of the int and double data types are displayed as shown in the screen above. It also prints the size of memory, size of commands that can be entered per line, and endianness.
 When the interpreter processed command(s) and waits for the next command, the following is output:
 ```
-READY(x,yyyy)>>
+READY(x,yyyyy)>>
 ```
 x represents the current pointer mode. There are 5 pointer modes: 0: char, 1: int, 2: double, 3: unsigned char, and 4: unsigned int.
-yyyy represents the current memory address in decimal.
+yyyyy represents the current memory address in decimal.
 
 When loading a file, you must specify a path and extension. The output values are different when loading and executing a file on one line and when executing the next line after loading a file. As an example, if you load and run the hw.abf file, the following output is displayed.
 ```
-READY(0,0000)>> l`c:\abf\hw.abf`
+READY(0,00000)>> l`c:\abf\hw.abf`
 File Loaded c:\abf\hw.abf
-READY(0,0000)>> s
+READY(0,00000)>> s
 Hello, world
 
-READY(0,0014)>> ku
+READY(0,00014)>> ku
 
-READY(0,0000)>> l`c:\abf\hw.abf`s
+READY(0,00000)>> l`c:\abf\hw.abf`s
 File Loaded c:\abf\hw.abfHello, world
 ```
 As in the example, if both loading and execution are processed on one line, the output of the program is output without line breaks. On the other hand, if you run the file on the next line after loading, you can see that "Hello, world" is displayed normally.
 
 If an error occurs during command execution, an error message is displayed and the command execution is stopped. If the file is running, the file will stop being executed. An example error message is as follows:
 ```
-READY(0,0000)>> `
+READY(0,00000)>> `
 ?Error name marker without command. cmd at 0, line 0
-Command execution halted(Syntax Error)
-READY(0,0000)>>
+READY(0,00000)>>
 ```
-The error message specifies where the error occurred in the command, such as "cmd at 0, line 0". If line is 0, an error occurred while entering and executing a command in the interpreter without loading a file. Error messages are output in the format "?Error ...". After that, in the next line, "Command execution halted(...)" specifies what kind of error occurred. The example above has a syntax error.
+The error message specifies where the error occurred in the command, such as "cmd at 0, line 0". If line is 0, an error occurred while entering and executing a command in the interpreter without loading a file. Error messages are output in the format "?Error ...".
 
 Before executing the command, the interpreter checks whether the number of opening and closing parts of the parentheses () of the if statement and the brackets [] of the loop statement are the same. If the number of open parts and the number of closed parts do not match, the following error message is displayed.
 ```
-READY(0,0000)>> []]
+READY(0,00000)>> []]
 ?Error parentheses and/or brackets are not balanced
-READY(0,0000)>>
+READY(0,00000)>>
 ```
 In the interpreter, the 'g' command performs the same function as MSVC's non-standard function _getch(). In other words, as soon as a character is entered on the keyboard, the value is stored in the memory. However, if the operating system is not MS Windows or Linux, the 'g' command may not be executed normally. In this case, the user must modify the source code and implement it.
 
-When writing a value to memory as an int or double type, the interpreter checks that the memory range is not exceeded. The maximum value of the memory address is 4095. If an address exceeding 4092 for int and 4088 for double is set, the maximum value of memory address is exceeded and an error message is displayed.
+When writing a value to memory as an int or double type, the interpreter checks that the memory range is not exceeded. The maximum value of the memory address is 65534. If an address exceeding 65531 for int and 65527 for double is set, the maximum value of memory address is exceeded and an error message is displayed.
 ```
-READY(0,4092)>> #w5647
+READY(1,65531)>> w5647
 
-READY(1,4092)>> >w5647
-?Error address out of range. cmd at 1
-Command execution halted(Memory/Value Range Error)
-READY(1,4093)>> @f4088w2.2
+READY(1,65531)>> >w5647
+?Error address out of range. cmd at 1, line 0
+READY(1,65532)>> @f65527w2.2
 
-READY(2,4088)>> >w2.2
-?Error address out of range. cmd at 1
-Command execution halted(Memory/Value Range Error)
-READY(2,4089)>>
+READY(2,65527)>> >w2.2
+?Error address out of range. cmd at 1, line 0
+READY(2,65528)>>
 ```
 If the pointer mode is double, an error message is output if the bitwise operator and modulus operator are used.
 ```
-READY(0,0000)>> @%1,10
+READY(0,00000)>> @%1,10
 ?Error modulus operation in floating point format. cmd at 1, line 0
-Command execution halted(Syntax Error)
-READY(2,0000)>> @|1,10
+READY(2,00000)>> @|1,10
 ?Error bitwise operation in floating point format(|). cmd at 1, line 0
-Command execution halted(Syntax Error)
-READY(2,0000)>>
+READY(2,00000)>>
 ```
 If you use the 'w' command while using an int or double pointer, the interpreter does not check the size of the input value.
 
 If the interpreter receives an error from the program, it displays an error code and then stops executing the program.
 ```
-READY(0,0000)>> s
+READY(0,00000)>> s
 
 Program handled error(-1)
-READY(0,0000)>>
+READY(0,00000)>>
 ```
 The operation result stored in the buffer is retained unless a command that changes the value of the buffer is executed. After performing an operation using this behavior, you can save the operation result in multiple addresses in the memory.
 ```
-READY(0,0000)>> w1>w2:0,1>=\>=\
+READY(0,00000)>> w1>w2:0,1>=\>=\
 -1-1
-READY(0,0003)>>
+READY(0,00003)>>
 ```
