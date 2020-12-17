@@ -258,7 +258,8 @@ Ascii BrainFuck Language Interpreter Prompt
 int size: 4 Bytes, double size: 8 Bytes
 int range: -2147483648 to 2147483647, double range: (+-) 2.22507385851e-308 to 1.79769313486e+308
 Memory size: 65535 Bytes
-Maximum command length per line: 4096 Bytes with NULL
+Maximum command length per line: 4096 Bytes including null
+Maximum file name length: 1024 Bytes including null
 Byte order is Little endian.
 ***Type ? for commands***
 
