@@ -20,32 +20,32 @@ Contents
 List of commands
 ---
 ```
-a: AND                                       []: while(*ptr != 0) loop bracket
-b: Break                                     `: name marker
-c: define Condition                          !: NEQ
-d: Decrement value                           @: set double pointer
+a: AND                                       []: while(*ptr) loop bracket
+b: break                                     `: name marker
+c: define condition                          !: NEQ
+d: decrement value                           @: set double pointer
 e: EQU                                       #: set integer pointer
-f: Forward(set ptr to X)                     $: set char pointer
-g: Get keyboard input and save as uchar      %: modulus
-h: Handle Error code                         ^: bitwise XOR
-i: Increment value                           &: bitwise AND
-j: Jump                                      *: multiply
-k: Knockdown(initialize interpreter)         (): if parentheses
-l: Load file                                 -: subtract
-m: Match(copy value at X to Y)               _: print as double
+f: forward(set ptr to X)                     $: set char pointer
+g: get keyboard input and save as uchar      %: modulus
+h: handle Error code                         ^: bitwise XOR
+i: increment value                           &: bitwise AND
+j: jump                                      *: multiply
+k: initialize interpreter                    (): if parentheses
+l: load file                                 -: subtract
+m: match(copy value at X to Y)               _: print as double
 n: NOT                                       =: save product to current address
 o: OR                                        +: add
-p: Print as char                             .: decimal, for double
+p: print as char                             .: decimal, for double
 q: print source code                         ,: separator
-r: Return(jump) to pos pointed by pos buffer <: decrement pointer
-s: Start file execution                      >: increment pointer
-t: Terminate file execution                  /: divide(*(p+X)/*(p+Y))
-u: Unload file                               ?: help(command list)
+r: return                                    <: decrement pointer
+s: start file execution                      >: increment pointer
+t: terminate file execution                  /: divide(*(p+X)/*(p+Y))
+u: unload file                               ?: help(command list)
 v: jump to next line(↓)                      ;: REM(comment)
-w: Write X                                   :: compare
+w: write X                                   :: compare
 x: close interpreter                         ': set signed type
-y: save current pos to pos buffer            ": set unsigned type
-z: Zerofill memory                           \: print as integer
+y: save current line num to line num buffer  ": set unsigned type
+z: zerofill memory                           \: print as integer
 |: bitwise OR                                {: bit shift to left
 ~: bitwise NOT                               }: bit shift to right
 ```
@@ -136,11 +136,31 @@ READY(0,0000)>>
 20 p
 30 j20 ;jumps to 20 and create infinite loop, printing 'A'.
 ```
+- line number is not essential. You can skip writing line number if jump to that line won't be happend.
+```
+;Example
+10 z'$
+20 j50
+30 v
+f0w88pzt
+50 f0w65pw0j30
+;execution order: 10 -> 20 -> 50 -> 30 -> "f0w88pzt"
+```
 - 'k' command initializes pointer type, internal buffers, settings, etc. However, the file remains open.
 - 'm' command is affected by pointer type.
 - 'p' command prints current byte value as char.
 - 'q' command cannot be used without loading a file. Also it cannot be used in file(s).
-- 'r' command is similar to return. It executed codes in line right after the line stored in position buffer by 'y' command.
+- 'r' command is return. codes in the next line of the line stored in line number buffer by 'y' command will be executed.
+```
+;Example
+10 z'$
+20 yj100 ;save line number "20" to line number buffer, then jump to 100
+25 c,,e ;starts from here after 'r' at 110
+30 f0zt
+
+100 f0w90>w64[ipc0,1,e(b)] ;print ABCDE...XYZ
+110 r ;return to the next line of "20"
+```
 - 't' command is used for terminating file execution without error. It does not return error code.
 - Any characters after 't' will be considered as remarks/comments.
 - 'v' executes commands at the next line.
