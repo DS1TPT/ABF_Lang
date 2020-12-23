@@ -5,7 +5,7 @@ ABF is an esoteric programming language inspired by BrainFuck. ABF has more comm
 - Logical/comparative/four fundamental calculations/modulus/bit-wise operators
 - Error code handling (to interpreter)
 - Jump commands
-- Function support(using jump commands)
+- Subroutine support(using jump commands)
 - integrated memory zerofill command
 - Significantly more complex syntax
 - Spaghettification ability with jumps
@@ -166,7 +166,7 @@ f0w88pzt
 - 'v' executes commands at the next line.
 - 'y' command saves current BASIC style position to position buffer.
 - Nested if and loop are supported.
-- Function can be implemented in file(s) using 'j', 'r', 'y' commands. Please refer to Example programs.
+- Subroutine can be implemented in file(s) using 'j', 'r', 'y' commands. Please refer to Example programs.
 - When loading a file, you must put '`' before and after the directory and name of the file.
 ```
 Example: l`c:\abf\prg.abf`
@@ -195,7 +195,7 @@ Press Enter(Return) to continue
 z'$f0w13>w10>w7[gc0,2,e(b)c1,2,e(b)]w88pz'$f0t
 ```
 
-Function implementation example(File exe only)
+Subroutine implementation example(File exe only)
 ```
 ;main
 1 z'$
@@ -205,16 +205,16 @@ Function implementation example(File exe only)
 40 yj200
 50 t
 
-;Fn, prints "Hello, world"
+;sr, prints "Hello, world"
 100 z'$f0w72>w101>w108m2,3f4w111>w44>w32>w119m4,8f9w114m3,10f11w100>w10>w13f0[p>]
 101 r
 
-;Fn, prints "Hello, world" 4 times
+;sr, prints "Hello, world" 4 times
 110 z'$f16w4f0w72>w101>w108m2,3f4w111>w44>w32>w119m4,8f9w114m3,10f11w100>w10>w13
 111 [f0[p>]f15ic15,16,e(b)]
 112 r
 
-;Fn, Zerofill, set signed char pointer, and set pointer to address 0.
+;sr, Zerofill, set signed char pointer, and set pointer to address 0.
 200 z'$c0,0,ef0r
 ```
 Big endian to little endian(32b int) example(File exe only)
