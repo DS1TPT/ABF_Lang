@@ -178,7 +178,8 @@ f0w88pzt
 - Subroutine can be implemented in file(s) using 'j', 'r', 'y' commands. Please refer to Example programs.
 - When loading a file, you must put '`' before and after the directory and name of the file.
 ```
-Example: l`c:\abf\prg.abf`
+Example1: l`c:\abf\prg.abf` ;Windows
+Example2: l`/abf/prg.abf`   ;Linux
 ```
 - '/' command uses the value at X as numerator, and the value at Y as denominator.
 - Any characters after ';' and in the same line will be considered as remarks/comments.
