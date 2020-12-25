@@ -70,6 +70,14 @@ Handling Argument(s)
 ```
 Example: a0,5 ; *mem && *(mem + 5)
 ```
+- If non-last argument is not given, argument will set to current address.
+```
+Example: $+,1000 ; *(mem + addr) + *(mem + 1000)
+```
+- If last argument is ',', argument will set to current address.
+```
+Example: $m1000,, ; *(mem + addr) = *(mem + 1000)
+```
   
 Data and pointer processing
 - size of char is 1B, size of int is 4B, and size of double is 8B For 32bit and 64bit systems.
@@ -116,13 +124,6 @@ Example: c0,2,!(...) ;if (*mem != *(mem + 2)) {...}
 ```
 Method 1: c1,1,n(...) ;if (! *(mem + 1)) {...}
 Method 2: c1,,n(...)
-```
-- If no argument is given for X and Y, they will be set to current address.
-```
-Example
-;Current address is 10000
-c,10001,e(...) ;if (*(mem + addr) == *(mem + 10000)) {...}
-c,,e(...) ;if (*(mem + addr) == *(mem + addr)) {...}, equivalent to if (1) {...}
 ```
 - 'b' command stops command execution and starts it from next ']'.
 - pointer(address) incrementation and decrementation will not be affected by the pointer type.
