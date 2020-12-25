@@ -117,6 +117,13 @@ Example: c0,2,!(...) ;if (*mem != *(mem + 2)) {...}
 Method 1: c1,1,n(...) ;if (! *(mem + 1)) {...}
 Method 2: c1,,n(...)
 ```
+- If no argument is given for X and Y, they will be set to current address.
+```
+Example
+;Current address is 10000
+c,10001,e(...) ;if (*(mem + addr) == *(mem + 10000)) {...}
+c,,e(...) ;if (*(mem + addr) == *(mem + addr)) {...}, equivalent to if (1) {...}
+```
 - 'b' command stops command execution and starts it from next ']'.
 - pointer(address) incrementation and decrementation will not be affected by the pointer type.
 - 'i' and 'd' increments/decrements data value. These commands are affected by the pointer type. 
@@ -155,7 +162,7 @@ f0w88pzt
 ;Example
 10 z'$
 20 yj100 ;save line number "20" to line number buffer, then jump to 100
-25 c,,e ;starts from here after 'r' at 110
+25 c,,e() ;starts from here after 'r' at 110
 30 f0zt
 
 100 f0w90>w64[ipc0,1,e(b)] ;print ABCDE...XYZ
