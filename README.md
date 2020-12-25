@@ -1,13 +1,14 @@
 ABF, Ascii BrainFuck
 ===
-ABF is an esoteric programming language inspired by BrainFuck. ABF has more commands and features for programming ease(lol), while keeping its esoteric nature. Here are the list of features.
-- Various data types
+ABF is an esoteric programming language inspired by BrainFuck. Here are the list of features.
+- 8 basic BF commands
+- Various data types(char, int, uchar, uint, double)
 - Logical/comparative/four fundamental calculations/modulus/bit-wise operators
-- Error code handling (to interpreter)
-- Jump commands
-- Subroutine support(using jump commands)
+- Error code handling (to interpreter, flimsy)
+- Jumps
+- Subroutine support(using jump)
 - integrated memory zerofill command
-- Significantly more complex syntax
+- Significantly more complex(?) syntax
 - Spaghettification ability with jumps
 
 Contents
