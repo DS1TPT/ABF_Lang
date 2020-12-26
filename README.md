@@ -392,7 +392,7 @@ Print byte value in bin, argument at 0(byte val), temporary 1 - 5
 "$f4w0>w1<\\\\\\\f4w8f3w2</0,3=<%0,3=\f4ppf2[<%2,3=\>/2,3=f4ppf2c2,5,e(b)]\
 f1w0>w0>w0>w0>w0r ;clear temporary data
 ```
-Get string while <CR> or <LF>, writes from 0, temporary 65533 - 65534, 65532 is always null
+Get string while CR or LF, writes from 0, temporary 65533 - 65534, 65532 is always null
 ```
 $f65531w0>w0>w10>w13f0w1[gc,65533,e(w0b)c,65534,e(w0b)c65531,65532,!(b)>w1]f65531w0>w0f0r
 ```
