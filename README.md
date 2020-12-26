@@ -205,32 +205,9 @@ Press Enter(Return) to continue
 ```
 z'$f0w13>w10>w7[gc0,2,e(b)c1,2,e(b)]w88pz'$f0t
 ```
-
-Subroutine implementation example(File exe only)
+Big endian to little endian(32b int), subroutine implementation example(File exe only)
 ```
-;main
-1 z'$
-10 yj200
-20 yj100
-30 yj110
-40 yj200
-50 t
-
-;sr, prints "Hello, world"
-100 z'$f0w72>w101>w108m2,3f4w111>w44>w32>w119m4,8f9w114m3,10f11w100>w10>w13f0[p>]
-101 r
-
-;sr, prints "Hello, world" 4 times
-110 z'$f16w4f0w72>w101>w108m2,3f4w111>w44>w32>w119m4,8f9w114m3,10f11w100>w10>w13
-111 [f0[p>]f15ic15,16,e(b)]
-112 r
-
-;sr, Zerofill, set signed char pointer, and set pointer to address 0.
-200 z'$c0,0,ef0r
-```
-Big endian to little endian(32b int) example(File exe only)
-```
-;Write uint data 0x12345678 in Big endian
+;Write uint data 0x12345678 in Big endian(on little endian system)
 1 f1000"#
 10 w2018915346\ ;uint 0x12345678 in Big endian
 15 yj160
