@@ -17,6 +17,7 @@ Contents
 - Syntax
 - Example programs
 - Interpreter
+- Probably useful programs
 
 List of commands
 ---
@@ -367,4 +368,31 @@ The operation result stored in the buffer is retained unless a command that chan
 READY(0,00000)>> w1>w2:0,1>=\>=\
 -1-1
 READY(0,00003)>>
+```
+
+Probably useful programs
+---
+Get keyboard input without echo, address 0 and 1 is temporary, stores input at 2
+```
+$f0w8>w32>g<<p>p<pw0>w0>r
+```
+Press any key to continue, uses address 0(temporary)
+```
+$f0w10pw13pw32pw80pw114pw101pw115ppw32pw97pw110pw121pw32pw107pw101pw121p
+w32pw116pw111pw32pw99pw111pw110pw116pw105pw110pw117pw101pw46pppw32p
+gw8pw32pw0r
+```
+Print byte value in hex, argument at 0(byte val), temporary 1 - 6
+```
+"$f1w16>%0,1=>>/0,1=<%4,1=f4w0f4w48>w48>w58f2[df5ic5,6,e(w65)f2]f3[df4ic4,6,e(w65)f3]f4p>p
+>w0<w0<w0<w0<w0<w0<r ;clear temporary data
+```
+Print byte value in bin, argument at 0(byte val), temporary 1 - 5
+```
+"$f4w0>w1<\\\\\\\f4w8f3w2</0,3=<%0,3=\f4ppf2[<%2,3=\>/2,3=f4ppf2c2,5,e(b)]\
+f1w0>w0>w0>w0>w0r ;clear temporary data
+```
+Get string while <CR> or <LF>, writes from 0, temporary 65533 - 65534, 65532 is always null
+```
+$f65531w0>w0>w10>w13f0w1[gc,65533,e(w0b)c,65534,e(w0b)c65531,65532,!(b)>w1]f65531w0>w0f0r
 ```
