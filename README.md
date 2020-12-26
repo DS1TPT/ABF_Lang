@@ -17,7 +17,7 @@ Contents
 - Syntax
 - Example programs
 - Interpreter
-- Probably useful programs
+- Probably useful codes
 
 List of commands
 ---
@@ -370,7 +370,7 @@ READY(0,00000)>> w1>w2:0,1>=\>=\
 READY(0,00003)>>
 ```
 
-Probably useful programs
+Probably useful codes
 ---
 Get keyboard input without echo, address 0 and 1 is temporary, stores input at 2
 ```
