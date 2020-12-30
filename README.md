@@ -25,6 +25,7 @@ Update notes
 - v1.01(current)
   - Removed unused variable(s)
   - Fixed signed char related problems on ARM platforms
+  - Some other Minor changes
 - v1.00: First interpreter version
 
 List of commands
