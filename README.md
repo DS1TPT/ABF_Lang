@@ -2,7 +2,7 @@ ABF, Ascii BrainFuck
 ===
 ABF is an esoteric programming language inspired by BrainFuck. Here are the list of features.
 - 8 basic BF commands
-- Various data types(char, int, uchar, uint, double)
+- Various data types(schar, int, uchar, uint, double)
 - Logical/comparative/four fundamental calculations/modulus/bit-wise operators
 - Error code handling (to interpreter, flimsy)
 - Jumps
@@ -13,11 +13,19 @@ ABF is an esoteric programming language inspired by BrainFuck. Here are the list
 
 Contents
 ---
+- Update notes
 - List of commands
 - Syntax
 - Example programs
 - Interpreter
 - Probably useful codes
+
+Update notes
+---
+- v1.01(current)
+  - Removed unused variable(s)
+  - Fixed signed char related problems on ARM platforms
+- v1.00: First interpreter version
 
 List of commands
 ---
@@ -254,7 +262,7 @@ Size of int: 4 Bytes(system dependant)
 
 Size of double: 8 Bytes(system dependant)
 
-Data types supported: char, unsigned char, int, unsigned int, double
+Data types supported: signed char, unsigned char, int, unsigned int, double
 
 - Introduction
 
