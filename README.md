@@ -370,7 +370,7 @@ gw8pw32pw0r
 ```
 Print byte value in hex, argument at 0(byte val), temporary 1 - 6
 ```
-"$f1w16>%0,1=>>/0,1=<%4,1=f4w0f4w48>w48>w58f2[df5ic5,6,e(w65)f2]f3[df4ic4,6,e(w65)f3]f4p>p
+"$f1w16>%0,1=>>/0,1=<%4,1=f4w48>w48>w58f2[df5ic5,6,e(w65)f2]f3[df4ic4,6,e(w65)f3]f4p>p
 >w0<w0<w0<w0<w0<w0<r ;clear temporary data
 ```
 Print byte value in bin, argument at 0(byte val), temporary 1 - 5
