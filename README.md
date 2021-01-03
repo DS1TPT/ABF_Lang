@@ -62,7 +62,7 @@ g: get keyboard input and save as uchar      %: modulus
 h: handle Error code                         ^: bitwise XOR
 i: increment value                           &: bitwise AND
 j: jump                                      *: multiply
-k: key(get keyboard input without echo       (): if parentheses
+k: key(get keyboard input without echo)      (): if parentheses
 l: increase/decrease value by X              -: subtract
 m: match(copy value at X to Y)               _: print as double
 n: NOT                                       =: save product to current address
