@@ -85,7 +85,7 @@ Note: 4 commands of BF('+', '-', '.', ',') are changed to 'i', 'd', 'p', 'g'. Bu
 ```
 ++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++. ;BF
 $iiiiiiii[>iiii[>ii>iii>iii>i<<<<d]>i>i>d>>i[<]<d]>>p>dddpiiiiiiippiiip>>p<dp<piiipddddddpddddddddp>>ip>iip ;direct-translation, '$' is being put to do byte-wise increment/decrement operations
-$l8[>l4[>l2>l3>l3>iq-4d]>i>i>d>>i[<]<d]>>p>l-3pl7ppl3p>>p<dp<pl3pl-6pl-8p>>ip>iip ;simplified translation.
+$l8[>l4[>ii>l3>l3>iq-4d]>i>i>d>>i[<]<d]>>p>l-3pl7ppl3p>>p<dp<pl3pl-6pl-8p>>ip>iip ;simplified translation.
 ```
 
 Interpreter specific commands
