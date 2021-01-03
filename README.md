@@ -236,6 +236,10 @@ f0w88pzt
 100 f0w90>w64[ipc0,1,e(b)] ;print ABCDE...XYZ
 110 r ;return to the next line of "20"
 ```
+- 's' command writes string wrapped by '`' to current address. It also writes null to the end of string.
+```
+f100s`Hello, world!` ;writes Hello, world!\0 from 100
+```
 - 't' command is used for terminating file execution without error. It does not return error code.
 - Any characters after 't' will be considered as remarks/comments.
 - 'u' suspends(sleep) program execution for X second(s).
