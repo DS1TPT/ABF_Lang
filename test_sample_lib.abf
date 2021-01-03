@@ -1,5 +1,5 @@
 ;library implementation test program for sample_lib.abl
-;save sample.abl in the same directory where the interpreter is located
+;save sample.abl in the directory where the interpreter is located
 ;to run this program properly.
 
 --import sample.abl
