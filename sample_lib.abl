@@ -26,7 +26,7 @@ $f65531w0>w0>w10>w13f100w1[kc,65533,e(w0b)c,65534,e(w0b)c65531,65532,!(b)>w1]f65
 
 ;print byte in hex, argument 0, temporary 1 - 6
 ++printhex
-"$f1w16>%0,1=>>/0,1=<%4,1=f4w0f4w48>w48>w58f2[df5ic5,6,e(w65)f2]f3[df4ic4,6,e(w65)f3]f4p>p
+"$f1w16>%0,1=>>/0,1=<%4,1=f4w48>w48>w58f2[df5ic5,6,e(w65)f2]f3[df4ic4,6,e(w65)f3]f4p>p
 >w0<w0<w0<w0<w0<w0< ;clear temporary data
 --srend
 
