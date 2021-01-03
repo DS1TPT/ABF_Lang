@@ -1,0 +1,68 @@
+;Sample library for ABF Interpreter version 1.10 or later
+;If you use this library, do not use memory from 0 to 10 unless handling argument(s).
+;You can also copy-paste subroutine(s) to your program(s).
+
+--list-begin
+printstr getse gets printhex printbin zerofillUntilNull
+memfill memfillUntilNull anykey y/n
+--list-end
+
+;***I/O subroutines***;
+
+;print string
+++printstr
+[p>]
+--srend
+
+;get string input while CR or LF, temporary 65531 - 65534, writes from 100
+++getse
+$f65531w0>w0>w10>w13f100w1[gc,65533,e(w0b)c,65534,e(w0b)c65531,65532,!(b)>w1]f65531w0>w0f100
+--srend
+
+;get string input while CR or LF without echo, temporary 65531 - 65534, writes from 100
+++gets
+$f65531w0>w0>w10>w13f100w1[kc,65533,e(w0b)c,65534,e(w0b)c65531,65532,!(b)>w1]f65531w0>w0f100
+--srend
+
+;print byte in hex, argument 0, temporary 1 - 6
+++printhex
+"$f1w16>%0,1=>>/0,1=<%4,1=f4w0f4w48>w48>w58f2[df5ic5,6,e(w65)f2]f3[df4ic4,6,e(w65)f3]f4p>p
+>w0<w0<w0<w0<w0<w0< ;clear temporary data
+--srend
+
+;print byte in bin, argument 0, temporary 1 - 5
+++printbin
+"$f4w0>w1<\\\\\\\f4w8f3w2</0,3=<%0,3=\f4ppf2[<%2,3=\>/2,3=f4ppf2c2,5,e(b)]\
+f1w0>w0>w0>w0>w0 ;clear temporary data
+--srend
+
+;***Memory subroutines***;
+
+;zerofill until next null
+++zerofillUntilNull
+[w0>]
+--srend
+
+;fill memory with argument, arg at 0, temporary 1
+++memfill
+"$f65534w0f1w0>w1[m0,,c1,65534,!(b)>w1]m0,1
+--srend
+
+;fill memory with argument until next null, arg at 0
+++memfillUntilNull
+"$w1[m0,,>]
+--srend
+
+;***Miscellaneous subroutines***;
+
+;press any key to continue, uses temp memory at 0
+;Does not use string function in order to save memory space
+++anykey
+$f0w10pw13pw32pw80pw114pw101pw115ppw32pw97pw110pw121pw32pw107pw101pw121p
+w32pw116pw111pw32pw99pw111pw110pw116pw105pw110pw117pw101pw46pppw32pkw32pw0
+--srend
+
+;Yes or no, uses temp memory 0 - 3, returns 4(0: No 1: Yes)
+++y/n
+$f0w89>w121>w78>w110>w89pw47pw78pw62pw32p[gc0,4,e(w1b)c1,4,e(w1b)c2,4,e(w0b)c3,4,e(w0b)]
+--srend

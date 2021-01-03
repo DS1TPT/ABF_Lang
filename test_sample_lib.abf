@@ -1,0 +1,12 @@
+;library implementation test program for sample_lib.abl
+;save sample.abl in the same directory where the interpreter is located
+;to run this program properly.
+
+--import sample.abl
+
+z"$f0s`Press any key to get hex and binary ASCII code>> `f0[p>]f0[w0>]f0k>w13pw10pw0
+--call printhex
+f11w10pw13p
+--call printbin
+--close-lib
+zf0t
