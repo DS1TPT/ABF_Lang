@@ -14,7 +14,8 @@ ABF is an esoteric programming language inspired by BrainFuck. Here are the list
 Contents
 ---
 - Update notes
-- List of commands
+- Commands of ABF
+- Interpreter specific commands
 - Syntax
 - Example programs
 - Interpreter
@@ -22,17 +23,37 @@ Contents
 
 Update notes
 ---
-- v1.01(current)
+- v1.10(current)
+  - **IMPORTANT** Some commands and syntax have been changed due to unnecessary command assignments. No more commands/syntax change will be done, so this is the first and last update of command and syntax. Here's the list of commands that changed, with previous functions and current functions.
+  ```
+  k: initialize interpreter -> get keyboard input without echo
+  l: load file -> increase/decrease value by X
+  q: print source code -> increase/decrease pointer by X
+  s: start file execution -> write string
+  u: unload(close) file -> suspend for X second(s)
+  x: close interpreter -> exchange value at X with value at Y
+  ?: print help -> write random number
+  `: name marker -> string start/end marker
+  ```
+  - Added command line input recording feature
+  - Added subroutine library feature
+  - Added clear screen feature
+  - Added internal variables display feature
+  - "--help" command prints help message('?' previously)
+  - Fixed some codes that can potentially cause problems
+  - Removed unnecessary variables
+- v1.01
   - Removed unused variable(s)
   - Fixed signed char related problems on ARM platforms
   - Some other Minor changes
 - v1.00: First interpreter version
 
-List of commands
+Commands of ABF
 ---
 ```
+The ABF language commands
 a: AND                                       []: while(*ptr) loop bracket
-b: break                                     `: name marker
+b: break                                     `: string start/end marker
 c: define condition                          !: NEQ
 d: decrement value                           @: set double pointer
 e: EQU                                       #: set integer pointer
@@ -41,20 +62,20 @@ g: get keyboard input and save as uchar      %: modulus
 h: handle Error code                         ^: bitwise XOR
 i: increment value                           &: bitwise AND
 j: jump                                      *: multiply
-k: initialize interpreter                    (): if parentheses
-l: load file                                 -: subtract
+k: key(get keyboard input without echo       (): if parentheses
+l: increase/decrease value by X              -: subtract
 m: match(copy value at X to Y)               _: print as double
 n: NOT                                       =: save product to current address
 o: OR                                        +: add
 p: print as char                             .: decimal, for double
-q: print source code                         ,: separator
+q: increase/decrease pointer by X            ,: separator
 r: return                                    <: decrement pointer
-s: start file execution                      >: increment pointer
+s: write string                              >: increment pointer
 t: terminate file execution                  /: divide(*(p+X)/*(p+Y))
-u: unload file                               ?: help(command list)
+u: suspend for X second(s)                   ?: help(command list)
 v: jump to next line(↓)                      ;: REM(comment)
 w: write X                                   :: compare
-x: close interpreter                         ': set signed type
+x: exchange value at X with value at Y       ': set signed type
 y: save current line num to line num buffer  ": set unsigned type
 z: zerofill memory                           \: print as integer
 |: bitwise OR                                {: bit shift to left
@@ -63,8 +84,36 @@ z: zerofill memory                           \: print as integer
 Note: 4 commands of BF('+', '-', '.', ',') are changed to 'i', 'd', 'p', 'g'. But 'i' and 'd' work a little bit different because they can also be used to increment/decrement the value of 32b integer and 64b double. Here's the example of BF Hello, world program translated into ABF.
 ```
 ++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++. ;BF
-$iiiiiiii[>iiii[>ii>iii>iii>i<<<<d]>i>i>d>>i[<]<d]>>p>dddpiiiiiiippiiip>>p<dp<piiipddddddpddddddddp>>ip>iip ;ABF, '$' is being put to do byte-wise increment/decrement operations
+$iiiiiiii[>iiii[>ii>iii>iii>i<<<<d]>i>i>d>>i[<]<d]>>p>dddpiiiiiiippiiip>>p<dp<piiipddddddpddddddddp>>ip>iip ;direct-translation, '$' is being put to do byte-wise increment/decrement operations
+$l8[>l4[>l2>l3>l3>iq-4d]>i>i>d>>i[<]<d]>>p>l-3pl7ppl3p>>p<dp<pl3pl-6pl-8p>>ip>iip ;simplified translation.
 ```
+
+Interpreter specific commands
+---
+```
+--help: print help message
+--load name: load program file
+--run: run program
+--print-code: print source code of program file
+--close: close program file
+--init: initialize interpreter except for file pointers and command buffer
+--exit: exit interpreter
+--clrscr: clear screen
+--import name: import a library file
+--close-lib: close library file
+++name: library only, subroutine [name] start point marker
+--srend: library only, subroutine end point marker
+--list-begin: library only, beginning of subroutine list
+--list-end: library only, end of subroutin list
+--record-start: start recording command line input to file
+--record-stop: stop recording command line input
+--record-del: delete record file
+--record-print: print record file
+--call name: call subroutine defined in the imported library
+--disp-internal-vars: display values of internal variables
+--disp-subroutine-list: display list of subroutines in library
+```
+Note: name is literally the name of file or subroutine. name must not be wrapped with string marker command '`'.
 
 Syntax
 ---
@@ -91,8 +140,8 @@ Example: $m1000,, ; *(mem + addr) = *(mem + 1000)
 ```
   
 Data and pointer processing
-- size of char is 1B, size of int is 4B, and size of double is 8B For 32bit and 64bit systems.
-- Pointer type and signed/unsigned will be maintained without specific commands including 'k'.
+- size of char is 1B, but the size of int and double is system-dependant.
+- Pointer type and signed/unsigned will be maintained without specific commands.
 - Product of calculations except for shift calculations('{' and '}') will be stored in buffer. To save the product to memory, you must set correct pointer type and use '=' command.
 ```
 Example: f0w100f1w250-1,0f2= ;buffer = *(mem + 1) - *mem; *(mem + 2) = buffer;
@@ -110,6 +159,7 @@ Example: '#f0w2147483647$f2w0 ;value from 0 to 3: 0xffff007f(little-endian)
 - '_' command reads and outputs the value in floating-point type as much as the length of double type.
 - '/' command calculates quotient if pointer type is not double.
 - ':' command ALWAYS saves product to buffer in signed char type.
+- 'x' command uses buffer. The value at X may remain in the buffer.
 - When checking conditions for if statement, interpreter reads and compares data in previously set pointer type.
 ```
 Example:'#c10,32,!(f0\) ;if int value at address 10 to 13 is not equal to value at address 32 to 35 then f0\
@@ -140,7 +190,6 @@ Method 2: c1,,n(...)
 - pointer(address) incrementation and decrementation will not be affected by the pointer type.
 - 'i' and 'd' increments/decrements data value. These commands are affected by the pointer type. 
 - 'e' and '!' are comparative operator. They return 1 if condition is true, and 0 if condition is false.
-- 'g' command uses stdin.
 - 'h' command returns error code and halts program execution. Error code's type is unsigned int.
 ```
 Example, z'h100w65p is written in the file which is being executed.
@@ -165,10 +214,17 @@ f0w88pzt
 50 f0w65pw0j30
 ;execution order: 10 -> 20 -> 50 -> 30 -> "f0w88pzt"
 ```
-- 'k' command initializes pointer type, internal buffers, settings, etc. However, the file remains open.
-- 'm' command is affected by pointer type.
+- line number, ABF commands and remarks(comments) must NOT be written with interpreter specific commands in the same line.
+```
+10 --import basic.abl ;incorrect
+10 v
+--import basic.abl
+;correct example above
+```
+- 'l' command increase value by X. If argument is negative, it decreases value.
+- 'm' and 'x' are affected by pointer type.
 - 'p' command prints current byte value as char.
-- 'q' command cannot be used without loading a file. Also it cannot be used in file(s).
+- 'q' command increase pointer by X. If argument is negative, it decreases pointer.
 - 'r' command is return. codes in the next line of the line stored in line number buffer by 'y' command will be executed.
 ```
 ;Example
@@ -182,15 +238,17 @@ f0w88pzt
 ```
 - 't' command is used for terminating file execution without error. It does not return error code.
 - Any characters after 't' will be considered as remarks/comments.
+- 'u' suspends(sleep) program execution for X second(s).
 - 'v' executes commands at the next line.
+- 'x' command exchanges value at X with value at Y. This command is affected by pointer type.
+```
+;Example
+$f0w88>w120 ;X at 0, x at 1
+x0,1 ;x at 0, X at 1
+```
 - 'y' command saves current BASIC style position to position buffer.
 - Nested if and loop are supported.
 - Subroutine can be implemented in file(s) using 'j', 'r', 'y' commands. Please refer to Example programs.
-- When loading a file, you must put '`' before and after the directory and name of the file.
-```
-Example1: l`c:\abf\prg.abf` ;Windows
-Example2: l`/abf/prg.abf`   ;Linux
-```
 - '/' command uses the value at X as numerator, and the value at Y as denominator.
 - Any characters after ';' and in the same line will be considered as remarks/comments.
 - ':' command stores -1(0xff) if the value at X is less than the value at Y, 0 if it is equal, 1(0x01) if it is greater.
@@ -204,15 +262,15 @@ d>]               ;Wrong!
 
 Example Programs
 ---
-print Hello, world
+print Hello, world using 's'
+```
+z'$f0s`Hello, world`f0[p>]zf0t
+```
+print Hello, world without using 's'
 ```
 z'$f0w72>w101>w108m2,3f4w111>w44>w32>w119m4,8f9w114m3,10f11w100>w10>w13f0
 ;write "Hello, world" from address 0 and then set address to 0
 [p>]zt ;print and increment pointer(address) while byte is not 0, fill memory with 0 and terminate after loop
-```
-Press Enter(Return) to continue
-```
-z'$f0w13>w10>w7[gc0,2,e(b)c1,2,e(b)]w88pz'$f0t
 ```
 Big endian to little endian(32b int), subroutine implementation example(File exe only)
 ```
@@ -249,6 +307,8 @@ Interpreter
 ---
 Interpreter is written in C language. Please let me know if you find any bug(s).
 
+Guide based on current interpreter version(1.10).
+
 I am just a hobbyist, therefore the source code may be complicated to read and/or have bugs. The descriptions below are based on tests performed on MS Windows(x86) Environment. Note: Interpreter built by gcc and tested on Debian linux.
 
 - Specifications
@@ -267,18 +327,18 @@ Data types supported: signed char, unsigned char, int, unsigned int, double
 
 - Introduction
 
-The win32 interpreter is built to run on Windows x86 systems. If you are not using an x86 or x86_64 environment, or if you are using Linux, you must build the source code yourself.
+The win32 interpreter is built to run on Windows x86 systems. If you are not using an x86 or x86_64 environment, or if you are using Unix-based OS or Linux, you must build the source code yourself.
 
 When you start the interpreter, the following screen is displayed.
 ```
-Ascii BrainFuck Language Interpreter Prompt
+Ascii BrainFuck Language Interpreter Prompt v1.10
 int size: 4 Bytes, double size: 8 Bytes
 int range: -2147483648 to 2147483647, double range: (+-) 2.22507385851e-308 to 1.79769313486e+308
 Memory size: 65535 Bytes
 Maximum command length per line: 4096 Bytes including null
 Maximum file name length: 1024 Bytes including null
 Byte order is Little endian.
-***Type ? for commands***
+***Type --help for commands***
 
 READY(0,00000)>>
 ```
@@ -290,27 +350,22 @@ READY(x,yyyyy)>>
 x represents the current pointer mode. There are 5 pointer modes: 0: char, 1: int, 2: double, 3: unsigned char, and 4: unsigned int.
 yyyyy represents the current memory address in decimal.
 
-When loading a file, you must specify a path and extension. The output values are different when loading and executing a file on one line and when executing the next line after loading a file. As an example, if you load and run the hw.abf file, the following output is displayed.
+When loading a file, you must specify the extension. Path is not required when the file is in the same directory.
 ```
-READY(0,00000)>> l`c:\abf\hw.abf`
-File Loaded c:\abf\hw.abf
-READY(0,00000)>> s
-Hello, world
-
-READY(0,00014)>> ku
-
-READY(0,00000)>> l`c:\abf\hw.abf`s
-File Loaded c:\abf\hw.abfHello, world
+;Windows example
+--import \lib\basic.abl
+--load c:\abf\helloworld.abf
+;Linux example
+--import /lib/basic.abl
+--load /abf/helloworld.abf
 ```
-As in the example, if both loading and execution are processed on one line, the output of the program is output without line breaks. On the other hand, if you run the file on the next line after loading, you can see that "Hello, world" is displayed normally.
-
 If an error occurs during command execution, an error message is displayed and the command execution is stopped. If the file is running, the file will stop being executed. An example error message is as follows:
 ```
 READY(0,00000)>> `
 ?Error name marker without command. cmd at 0, line 0
 READY(0,00000)>>
 ```
-The error message specifies where the error occurred in the command, such as "cmd at 0, line 0". If line is 0, an error occurred while entering and executing a command in the interpreter without loading a file. Error messages are output in the format "?Error ...".
+The error message specifies where the error occurred in the command, such as "cmd at 0, line 0". If line is 0, an error occurred while entering and executing a command in the interpreter without loading a file. Error messages are output in the format "?[error message]".
 
 Before executing the command, the interpreter checks whether the number of opening and closing parts of the parentheses () of the if statement and the brackets [] of the loop statement are the same. If the number of open parts and the number of closed parts do not match, the following error message is displayed.
 ```
@@ -318,7 +373,7 @@ READY(0,00000)>> []]
 ?Error parentheses and/or brackets are not balanced
 READY(0,00000)>>
 ```
-In the interpreter, the 'g' command performs the same function as MSVC's non-standard function _getch(). In other words, as soon as a character is entered on the keyboard, the value is stored in the memory. However, if the operating system is not MS Windows or Linux, the 'g' command may not be executed normally. In this case, the user must modify the source code and implement it.
+In the interpreter, the 'g' and 'k' commands perform the same function as MSVC's non-standard function _getche() and _getche(). In other words, as soon as a character is entered on the keyboard, the value is stored in the memory. For POSIX-compliant systems, those functions have been implemented using termios. However, if the operating system is not MS Windows, Unix-based operating systems or Linux, the 'g' command may not be executed normally. In this case, the user must modify the source code and implement it.
 
 When writing a value to memory as an int or double type, the interpreter checks that the memory range is not exceeded. The maximum value of the memory address is 65534. If an address exceeding 65531 for int and 65527 for double is set, the maximum value of memory address is exceeded and an error message is displayed.
 ```
