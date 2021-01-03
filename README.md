@@ -24,7 +24,7 @@ Contents
 Update notes
 ---
 - v1.10(current)
-  - **IMPORTANT** Some commands and syntax have been changed due to unnecessary command assignments. No more commands/syntax change will be done, so this is the first and last update of command and syntax. Here's the list of commands that changed, with previous functions and current functions.
+  - **IMPORTANT** Some commands and syntax have been changed due to unnecessary command assignments. No more commands/syntax change will be done, so this is the first and last update of command and syntax. Only missing syntax description(s) will be updated. Here's the list of commands that changed, with previous functions and current functions.
   ```
   k: initialize interpreter -> get keyboard input without echo
   l: load file -> increase/decrease value by X
@@ -138,6 +138,7 @@ Example: $+,1000 ; *(mem + addr) + *(mem + 1000)
 ```
 Example: $m1000,, ; *(mem + addr) = *(mem + 1000)
 ```
+- for 'h', 'l', and 'q', the argument is forced to signed type regardless of pointer mode.
   
 Data and pointer processing
 - size of char is 1B, but the size of int and double is system-dependant.
@@ -366,7 +367,7 @@ When loading a file, you must specify the extension. Path is not required when t
 If an error occurs during command execution, an error message is displayed and the command execution is stopped. If the file is running, the file will stop being executed. An example error message is as follows:
 ```
 READY(0,00000)>> `
-?Error name marker without command. cmd at 0, line 0
+?Error string marker without command. cmd at 0, line 0
 READY(0,00000)>>
 ```
 The error message specifies where the error occurred in the command, such as "cmd at 0, line 0". If line is 0, an error occurred while entering and executing a command in the interpreter without loading a file. Error messages are output in the format "?[error message]".
