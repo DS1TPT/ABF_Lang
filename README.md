@@ -264,6 +264,7 @@ z'$f0w100>[ip<d>] ;Correct
 z'$f0w100>[ip<
 d>]               ;Wrong!
 ```
+- In libraries, jump-related commands are not blocked by interpreter, but they must not be used. Also it's not a good idea to use 'z' unless totally necessary.
 
 Example Programs
 ---
