@@ -24,7 +24,7 @@ Contents
 Update notes
 ---
 - v1.10(current)
-  - **IMPORTANT** Some commands and syntax have been changed due to unnecessary command assignments. No more commands/syntax change will be done, so this is the first and last update of command and syntax. Only missing syntax description(s) will be updated. Here's the list of commands that changed, with previous functions and current functions.
+  - Some commands and syntax have been changed due to unnecessary command assignments. No more commands/syntax change will be done, so this is the first and last update of command and syntax. Only missing syntax description(s) will be updated. Here's the list of commands that changed, with previous functions and current functions.
   ```
   k: initialize interpreter -> get keyboard input without echo
   l: load file -> increase/decrease value by X
