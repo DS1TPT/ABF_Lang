@@ -265,6 +265,13 @@ z'$f0w100>[ip<
 d>]               ;Wrong!
 ```
 - In libraries, jump-related commands are not blocked by interpreter, but they must not be used. Also it's not a good idea to use 'z' unless totally necessary.
+- Upper-case letters and space are not commands. Use them to insert remarks/comments between codes.
+```
+;Example code
+z"$f0 INIT s`Hello, world!`f0[p>] PRINT STR f0[w0>]t CLEAR ;prints Hello, world! then terminate
+;The code above is equivalent to:
+z"$f0s`Hello, world!`f0[p>]f0[w0>]t
+```
 
 Example Programs
 ---
