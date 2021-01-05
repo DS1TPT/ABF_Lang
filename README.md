@@ -72,7 +72,7 @@ q: increase/decrease pointer by X            ,: separator
 r: return                                    <: decrement pointer
 s: write string                              >: increment pointer
 t: terminate file execution                  /: divide(*(p+X)/*(p+Y))
-u: suspend for X second(s)                   ?: help(command list)
+u: suspend for X second(s)                   ?: write random number
 v: jump to next line(↓)                      ;: REM(comment)
 w: write X                                   :: compare
 x: exchange value at X with value at Y       ': set signed type
