@@ -386,7 +386,7 @@ READY(0,00000)>> []]
 ?Error parentheses and/or brackets are not balanced
 READY(0,00000)>>
 ```
-In the interpreter, the 'g' and 'k' commands perform the same function as MSVC's non-standard function _getche() and _getche(). In other words, as soon as a character is entered on the keyboard, the value is stored in the memory. For POSIX-compliant systems, those functions have been implemented using termios. However, if the operating system is not MS Windows, Unix-based operating systems or Linux, the 'g' command may not be executed normally. In this case, the user must modify the source code and implement it.
+In the interpreter, the 'g' and 'k' commands perform the same function as MSVC's non-standard function _getch() and _getche(). In other words, as soon as a character is entered on the keyboard, the value is stored in the memory. For POSIX-compliant systems, those functions have been implemented using termios. However, if the operating system is not MS Windows, Unix-based operating systems or Linux, the 'g' command may not be executed normally. In this case, the user must modify the source code and implement it.
 
 When writing a value to memory as an int or double type, the interpreter checks that the memory range is not exceeded. The maximum value of the memory address is 65534. If an address exceeding 65531 for int and 65527 for double is set, the maximum value of memory address is exceeded and an error message is displayed.
 ```
