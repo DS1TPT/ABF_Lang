@@ -3,13 +3,16 @@ ABF, Ascii BrainFuck
 ABF is an esoteric programming language inspired by BrainFuck. Here are the list of features.
 - 8 basic BF commands
 - Various data types(schar, int, uchar, uint, double)
-- Logical/comparative/four fundamental calculations/modulus/bit-wise operators
+- Logical/comparative/four fundamental calculations/modulus/bit-wise/bit-shift operators
 - Error code handling (to interpreter, flimsy)
 - Jumps
 - Subroutine support(using jump)
 - integrated memory zerofill command
 - Significantly more complex(?) syntax
 - Spaghettification ability with jumps
+- Library support(On my interpreter)
+- Pseudo-random number support
+- Supports writing strings without messing with ASCII code
 
 Contents
 ---
@@ -23,7 +26,18 @@ Contents
 
 Update notes
 ---
-- v1.10(current)
+- v1.11(current)
+  - Added BF to ABF compiler(single line, command line input only)
+  - Errors will be recorded to record file
+  - Fixed recording file with incorrect newline character(s). On UNIX-based systems the interpreter will use '\n' for newline, and '\r\n' for Windows
+  - Fixed exceptions when using some interpreter specific commands without argument
+  - Fixed printing parentheses/brackets balance error when interpreter specific command is input
+  - Fixed incorrect error messages
+  - Fixed typos
+  - Shortened unnecessarily long codes
+  - Added license notice in prompt
+  - Miscellaneous fixes
+- v1.10
   - Some commands and syntax have been changed due to unnecessary command assignments. No more commands/syntax change will be done, so this is the first and last update of command and syntax. Only missing syntax description(s) will be updated. Here's the list of commands that changed, with previous functions and current functions.
   ```
   k: initialize interpreter -> get keyboard input without echo
@@ -92,11 +106,14 @@ Interpreter specific commands
 ---
 ```
 --help: print help message
+--license: print license notice
 --load name: load program file
 --run: run program
 --print-code: print source code of program file
 --close: close program file
 --init: initialize interpreter except for file pointers and command buffer
+--compile-direct code: compile BF code to ABF. 'q' and 'l' won't be used
+--compile code: compile BF code to ABF. 'q' and 'l' will be used
 --exit: exit interpreter
 --clrscr: clear screen
 --import name: import a library file
@@ -113,7 +130,9 @@ Interpreter specific commands
 --disp-internal-vars: display values of internal variables
 --disp-subroutine-list: display list of subroutines in library
 ```
-Note: name is literally the name of file or subroutine. name must not be wrapped with string marker command '`'.
+Note1: name is literally the name of file or subroutine. name must not be wrapped with string marker command '`'.
+
+Note2: Compiled code will be saved to record file if recording feature is active.
 
 Syntax
 ---
@@ -320,7 +339,7 @@ Interpreter
 ---
 Interpreter is written in C language. Please let me know if you find any bug(s).
 
-Guide based on current interpreter version(1.10).
+Guide based on current interpreter version(1.11).
 
 I am just a hobbyist, therefore the source code may be complicated to read and/or have bugs. The descriptions below are based on tests performed on MS Windows(x86) Environment. Note: Interpreter built by gcc and tested on Debian linux.
 
@@ -344,14 +363,14 @@ The win32 interpreter is built to run on Windows x86 systems. If you are not usi
 
 When you start the interpreter, the following screen is displayed.
 ```
-Ascii BrainFuck Language Interpreter Prompt v1.10
+Ascii BrainFuck Language Interpreter Prompt v1.11
 int size: 4 Bytes, double size: 8 Bytes
 int range: -2147483648 to 2147483647, double range: (+-) 2.22507385851e-308 to 1.79769313486e+308
 Memory size: 65535 Bytes
 Maximum command length per line: 4096 Bytes including null
 Maximum file name length: 1024 Bytes including null
 Byte order is Little endian.
-***Type --help for commands***
+***Type --help for commands, --license for license notice***
 
 READY(0,00000)>>
 ```
@@ -412,9 +431,9 @@ If you use the 'w' command while using an int or double pointer, the interpreter
 
 If the interpreter receives an error from the program, it displays an error code and then stops executing the program.
 ```
-READY(0,00000)>> s
+READY(0,00000)>> --run
 
-Program handled error(-1)
+Program handled error(-1)... Program execution halted.
 READY(0,00000)>>
 ```
 The operation result stored in the buffer is retained unless a command that changes the value of the buffer is executed. After performing an operation using this behavior, you can save the operation result in multiple addresses in the memory.
@@ -423,13 +442,50 @@ READY(0,00000)>> w1>w2:0,1>=\>=\
 -1-1
 READY(0,00003)>>
 ```
+Recording saves command line input, error messages, compiled code(BF -> ABF) to "abf_record" file. Record file is in the directory where the interpreter is located. If record file does not exist, interpreter will make one. If not, the interpreter will start saving from the new line. Record file contains when the recording is started.
+```
+[Interpreter input]
+READY(0,00000)>> --record-start
+
+READY(0,00000)>> w123"$f1w16>%0,1=>>/0,1=<%4,1=f4w48>w48>w58f2[df5ic5,6,e(w65)f2]f3[df4ic4,6,e(w65)f3]f4p>pf0z
+7B
+READY(3,00000)>> --compile ++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.
+l8[>l4[>ii>l3>l3>iq-4d]>i>i>d>>i[<]<d]>>p>l-3pl7ppl3p>>p<dp<pl3pl-6pl-8p>>ip>iip
+READY(3,00000)>> --compile-direct ++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.
+iiiiiiii[>iiii[>ii>iii>iii>i<<<<d]>i>i>d>>i[<]<d]>>p>dddpiiiiiiippiiip>>p<dp<piiipddddddpddddddddp>>ip>iip
+READY(3,00000)>> --record-stop
+
+READY(3,00000)>> --record-start
+
+READY(3,00000)>> s`Second time recording`f0[p>]z
+Second time recording
+READY(3,00021)>> [[]
+?Error parentheses and/or brackets are not balanced
+READY(3,00021)>> --record-stop
+
+READY(3,00021)>>
+```
+```
+[Record file output]
+Recording started at: [DATE&TIME]
+w123"$f1w16>%0,1=>>/0,1=<%4,1=f4w48>w48>w58f2[df5ic5,6,e(w65)f2]f3[df4ic4,6,e(w65)f3]f4p>pf0z
+--compile ++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.
+Compiled code: l8[>l4[>ii>l3>l3>iq-4d]>i>i>d>>i[<]<d]>>p>l-3pl7ppl3p>>p<dp<pl3pl-6pl-8p>>ip>iip
+--compile-direct ++++++++[>++++[>++>+++>+++>+<<<<-]>+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.+++.------.--------.>>+.>++.
+Compiled code: iiiiiiii[>iiii[>ii>iii>iii>i<<<<d]>i>i>d>>i[<]<d]>>p>dddpiiiiiiippiiip>>p<dp<piiipddddddpddddddddp>>ip>iip
+--record-stop
+Recording ended at: [DATE&TIME]
+Recording started at: [DATE&TIME]
+s`Second time recording`f0[p>]z
+[[]
+Error: parentheses and/or brackets are not balanced
+--record-stop
+Recording ended at: Sat Jan  [DATE&TIME]
+
+```
 
 Probably useful codes
 ---
-Get keyboard input without echo, address 0 and 1 is temporary, stores input at 2
-```
-$f0w8>w32>g<<p>p<pw0>w0>r
-```
 Press any key to continue, uses address 0(temporary)
 ```
 $f0w10pw13pw32pw80pw114pw101pw115ppw32pw97pw110pw121pw32pw107pw101pw121p
