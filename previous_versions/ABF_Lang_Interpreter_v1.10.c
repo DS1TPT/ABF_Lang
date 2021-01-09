@@ -22,7 +22,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <float.h>
-#include <time.h> /* for random number */
+#include <time.h>
 
 #define FALSE 0
 #define TRUE 1
