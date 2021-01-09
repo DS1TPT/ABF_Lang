@@ -1,0 +1,34 @@
+;Sample program
+;brainfuck to abf direct translator
+
+;memory 0 - 5999: bf input & abf output
+;memory 6000: null
+;memory 6001 - 6008: bf command table
+;memory 6009, 6010: <LF> and <CR>
+;memory 6011: 'x'
+;memory 6012 - 6015: ">> "
+
+;bf command table order: + - < > . , [ ]
+;                        1 2 3 4 5 6 7 8
+
+;initialize
+z"$f6001w43>w45>w60>w62>w46>w44>w91>w93>w10>w13>w120>s`>> `
+
+;main
+10 f6009p>pf6012[p>]f0
+20 yj100
+30 yj150
+40 yj200
+50 j10
+
+;sr, clear 0 - 5999
+100 f5999w1f0w1[w0c5999,6000,e(b)>w1]r
+
+;sr, getstr until CR or LF, or end of memory(5999)
+150 f0w1[gc,6011,e(v)c,6009,e(b)c,6010,e(b)c5999,6000,!(b)>w1]f0r
+160 zf0t ;'x' is input, terminate translator
+
+;translate and print
+200 f0[c,6001,e(w105)c,6002,e(w100)c,6005,e(w112)c,6006,e(w103)>] ;translation
+210 f6009p>p ;print <LF> and <CR>
+220 f0[p>]r ;print and return
