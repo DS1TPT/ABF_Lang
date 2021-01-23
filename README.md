@@ -14,7 +14,7 @@ ABF is an esoteric programming language inspired by BrainFuck. ABF can be consid
 - Pseudo-random number support
 - Supports writing strings without messing with ASCII code
 
-Current version is: 1.12
+Current version is: 1.12. Check UPDATE_LOG file to read update log.
 
 Contents
 ---
@@ -324,9 +324,17 @@ Data types supported: signed char, unsigned char, int, unsigned int, double
 
 The win32 interpreter is built to run on Windows x86 systems. If you are not using an x86 or x86_64 environment, or if you are using Unix-based OS or Linux, you must build the source code yourself.
 
-When you start the interpreter, the following screen is displayed.
+In order to start interpretation of a file without using prompt, you must give correct location and name of the file as argument to interpreter.
 ```
-Ascii BrainFuck Language Interpreter Prompt v1.11
+Windows example: abf_lang_intrpr.exe c:\abf\pi.abf
+*nix example: ./abf_lang_intrpr /abf/pi.abf
+
+Result: 3.14159265359
+```
+
+If you start the interpreter without an argument, the following screen is displayed.
+```
+Ascii BrainFuck Language Interpreter Prompt v1.12
 int size: 4 Bytes, double size: 8 Bytes
 int range: -2147483648 to 2147483647, double range: (+-) 2.22507385851e-308 to 1.79769313486e+308
 Memory size: 65535 Bytes
@@ -337,7 +345,7 @@ Byte order is Little endian.
 
 READY(0,00000)>>
 ```
-When the interpreter is started, the size and range of the int and double data types are displayed as shown in the screen above. It also prints the size of memory, size of commands that can be entered per line, and endianness.
+If the interpreter is started in prompt mode, the size and range of the int and double data types are displayed as shown in the screen above. It also prints the size of memory, size of commands that can be entered per line, and endianness.
 When the interpreter processed command(s) and waits for the next command, the following is output:
 ```
 READY(x,yyyyy)>>
