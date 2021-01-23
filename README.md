@@ -451,7 +451,7 @@ s`Second time recording`f0[p>]z
 [[]
 Error: parentheses and/or brackets are not balanced
 --record-stop
-Recording ended at: Sat Jan  [DATE&TIME]
+Recording ended at: [DATE&TIME]
 
 ```
 
