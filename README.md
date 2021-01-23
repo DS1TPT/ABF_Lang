@@ -1,7 +1,7 @@
 ABF, Ascii BrainFuck
 ===
-ABF is an esoteric programming language inspired by BrainFuck. Here are the list of features.
-- 8 basic BF commands
+ABF is an esoteric programming language inspired by BrainFuck. ABF can be considered as an dialect of BF.
+- 8 basic BF commands(half of them are assigned to different characters)
 - Various data types(schar, int, uchar, uint, double)
 - Logical/comparative/four fundamental calculations/modulus/bit-wise/bit-shift operators
 - Error code handling (to interpreter, flimsy)
@@ -14,53 +14,16 @@ ABF is an esoteric programming language inspired by BrainFuck. Here are the list
 - Pseudo-random number support
 - Supports writing strings without messing with ASCII code
 
+Current version is: 1.12
+
 Contents
 ---
-- Update notes
 - Commands of ABF
 - Interpreter specific commands
 - Syntax
 - Example programs
 - Interpreter
 - Probably useful codes
-
-Update notes
----
-- v1.11(current)
-  - Added BF to ABF compiler(single line, command line input only)
-  - Errors will be recorded to record file
-  - Fixed recording file with incorrect newline character(s). On UNIX-based systems the interpreter will use '\n' for newline, and '\r\n' for Windows
-  - Fixed exceptions when using some interpreter specific commands without argument
-  - Fixed printing parentheses/brackets balance error when interpreter specific command is input
-  - Fixed incorrect error messages
-  - Fixed typos
-  - Shortened unnecessarily long codes
-  - Added license notice in prompt
-  - Miscellaneous fixes
-- v1.10
-  - Some commands and syntax have been changed due to unnecessary command assignments. No more commands/syntax change will be done, so this is the first and last update of command and syntax. Only missing syntax description(s) will be updated. Here's the list of commands that changed, with previous functions and current functions.
-  ```
-  k: initialize interpreter -> get keyboard input without echo
-  l: load file -> increase/decrease value by X
-  q: print source code -> increase/decrease pointer by X
-  s: start file execution -> write string
-  u: unload(close) file -> suspend for X second(s)
-  x: close interpreter -> exchange value at X with value at Y
-  ?: print help -> write random number
-  `: name marker -> string start/end marker
-  ```
-  - Added command line input recording feature
-  - Added subroutine library feature
-  - Added clear screen feature
-  - Added internal variables display feature
-  - "--help" command prints help message('?' previously)
-  - Fixed some codes that can potentially cause problems
-  - Removed unnecessary variables
-- v1.01
-  - Removed unused variable(s)
-  - Fixed signed char related problems on ARM platforms
-  - Some other Minor changes
-- v1.00: First interpreter version
 
 Commands of ABF
 ---
