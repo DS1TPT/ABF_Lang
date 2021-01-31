@@ -302,7 +302,7 @@ Interpreter
 ---
 Interpreter is written in C language. Please let me know if you find any bug(s).
 
-Guide based on current interpreter version(1.11).
+Guide based on current interpreter version(1.12).
 
 I am just a hobbyist, therefore the source code may be complicated to read and/or have bugs. The descriptions below are based on tests performed on MS Windows(x86) Environment. Note: Interpreter built by gcc and tested on Debian linux.
 
