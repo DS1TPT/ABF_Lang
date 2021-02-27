@@ -107,7 +107,7 @@ Handling Argument(s)
 - Argument type of commands except for 'w' are int(unsigned/signed type depends on pointer mode).
 - 'w'command's argument type is int when pointer type is char or int, and signed int or double when pointer type is double. Unsigned/signed type depends on pointer mode.
 - Arguments must be written right after a command without space or anything else.
-- Size of arguments are 4 Bytes when pointer type is int/char, and 8 bytes when pointer type is double.
+- Size of arguments are 4 Bytes(typically) when pointer type is int/char, and 8 bytes(typically) when pointer type is double.
 - Arguments must be separated using ','.
 ```
 Example: a0,5 ; *mem && *(mem + 5)
@@ -173,7 +173,7 @@ Method 2: c1,,n(...)
 - pointer(address) incrementation and decrementation will not be affected by the pointer type.
 - 'i' and 'd' increments/decrements data value. These commands are affected by the pointer type. 
 - 'e' and '!' are comparative operator. They return 1 if condition is true, and 0 if condition is false.
-- 'h' command returns error code and halts program execution. Error code's type is unsigned int.
+- 'h' command returns error code and halts program execution. Error code's type is signed int.
 ```
 Example, z'h100w65p is written in the file which is being executed.
 READY(0,0000)>> s
